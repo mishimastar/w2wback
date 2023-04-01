@@ -104,20 +104,11 @@ export class Generator {
         if (good) {
             // console.log('Меня наградили!');
             this.goodResCounter++;
-            // for (let i = 0; i < this.weights.length; i++) {
-            //     const index = this.lastOut[i]!;
-            //     this.weights[i]![index]!.increase(this.rewardSpeed);
-            // }
-
             const index = this.lastOut[this.lastChanged]!;
             this.weights[this.lastChanged]![index]!.increase(this.rewardSpeed);
         } else {
             // console.log('Мне дали по шее((');
             this.badResCounter++;
-            // for (let i = 0; i < this.weights.length; i++) {
-            //     const index = this.lastOut[i]!;
-            //     this.weights[i]![index]!.reduce(this.rewardSpeed);
-            // }
             const index = this.lastOut[this.lastChanged]!;
             this.weights[this.lastChanged]![index]!.increase(this.rewardSpeed);
         }

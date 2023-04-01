@@ -18,9 +18,9 @@ for (const word of arr) {
 }
 
 const tree = new Tree(filtered);
-const steps = 1000000;
+const steps = 250000;
 const logSteps = 25000;
-const Gen = new Generator(36, steps, 1);
+const Gen = new Generator(25, steps, 1);
 
 let maxWords = 0;
 let bestTable = '';
@@ -39,7 +39,7 @@ const countAvg = (last: number, iteration: number, res: number[]) => {
 let previousWords = 0;
 for (let i = 0; i < steps; i++) {
     const table = Gen.buildString();
-    const matrix = new Matrix(table, 6);
+    const matrix = new Matrix(table, 5);
     const words = matrix.divePerf(tree);
     results.push(words);
     if (words > maxWords) {

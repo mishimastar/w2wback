@@ -12,21 +12,21 @@ console.log(filtered);
 console.log(filtered.size);
 const tree = new Tree(filtered);
 
-const cfg = new Map<number, number>([
-    [5, 300],
-    [6, 400]
+const cfgs = new Map<number, { enough: number; epoch: number }>([
+    [5, { enough: 300, epoch: 250000 }],
+    [6, { enough: 400, epoch: 400000 }]
 ]);
 
 const genTable = (size: number) => {
-    const steps = 1000000;
+    const cfg = cfgs.get(size)!;
+    const steps = cfg.epoch;
+    const enough = cfg.enough;
     const logSteps = 10000;
     const Gen = new Generator(size ** 2, steps, 1);
 
     let maxWords = 0;
     let bestTable = '';
     let bestStep = 0;
-
-    const enough = cfg.get(size)!;
 
     const results: number[] = [];
 
