@@ -209,6 +209,7 @@ class Node {
         this.selected = false;
         this.width = x1 - x0;
         this.height = y1 - y0;
+        this.radius2 = Math.trunc(Math.pow((this.width / 2), 2));
     }
     draw() {
         drawRect(this.x0, this.y0, this.width, this.height, '#525f94', this.canvas);
@@ -291,7 +292,7 @@ class Touches {
                 this.resetRects();
             }
         };
-        this.touchMeetsCell = (t, r) => t.pageX > r.x0 && t.pageX < r.x1 && t.pageY > r.y0 && t.pageY < r.y1;
+        this.touchMeetsCell = (t, r) => Math.pow((r.lx - t.pageX), 2) + Math.pow((r.ly - t.pageY), 2) <= r.radius2;
     }
     setWH(w, h) {
         this.width = w;
