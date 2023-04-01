@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { createServer, IncomingMessage } from 'node:http';
+import { BuildGame } from './buildgame';
 
 const mime = {
     html: 'text/html',
@@ -34,6 +35,11 @@ const processGet = async (
             return [readFileSync('./front/dict.js.map', { encoding: 'utf-8' }), 200, mime.js, undefined];
         case '/built/dict.js.map':
             return [readFileSync('./front/tree.js.map', { encoding: 'utf-8' }), 200, mime.js, undefined];
+
+        case '/gettable':
+            const resp = JSON.stringify(BuildGame());
+            console.log('=====================================', resp);
+            return [resp, 200, 'application/json', undefined];
 
         default:
             return ['', 302, '', `http://${url.host}`];
