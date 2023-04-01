@@ -19,7 +19,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _LetterNode_instances, _LetterNode_end, _LetterNode_daughters, _LetterNode_markAsLast, _Tree_Tree, _Touches_instances, _Touches_tableStr, _Touches_table, _Game_canvasHTML, _Game_canvas, _Game_touch, _Game_dict;
+var _LetterNode_instances, _LetterNode_end, _LetterNode_daughters, _LetterNode_markAsLast, _Tree_Tree, _Preview_instances, _Preview_x, _Preview_y, _Preview_width, _Preview_height, _Preview_draw, _Stats_instances, _Stats_x, _Stats_y, _Stats_width, _Stats_height, _Stats_score, _Stats_totalWords, _Stats_solvedWords, _Stats_clear, _Stats_draw, _Touches_instances, _Touches_tableStr, _Touches_table, _Game_canvasHTML, _Game_canvas, _Game_touch, _Game_dict;
 // function readTextFile(file: string) {
 //     fetch(file)
 //         .then((response) => response.text())
@@ -66,6 +66,7 @@ _LetterNode_end = new WeakMap(), _LetterNode_daughters = new WeakMap(), _LetterN
 };
 export class Tree {
     constructor(dictionary) {
+        this.dictionary = dictionary;
         _Tree_Tree.set(this, new Map());
         const firstSymbols = new Set();
         for (const word of dictionary)
@@ -122,6 +123,79 @@ const drawLetter = (letter, lx, ly, c) => {
     c.fillStyle = '#fcfefa';
     c.fillText(letter, lx, ly);
 };
+class Preview {
+    constructor(xw, yw, c, x, y, width, height) {
+        this.xw = xw;
+        this.yw = yw;
+        this.c = c;
+        _Preview_instances.add(this);
+        this.word = '';
+        _Preview_x.set(this, void 0);
+        _Preview_y.set(this, void 0);
+        _Preview_width.set(this, void 0);
+        _Preview_height.set(this, void 0);
+        __classPrivateFieldSet(this, _Preview_x, x, "f");
+        __classPrivateFieldSet(this, _Preview_y, y, "f");
+        __classPrivateFieldSet(this, _Preview_width, width, "f");
+        __classPrivateFieldSet(this, _Preview_height, height, "f");
+    }
+    clear() {
+        this.c.clearRect(__classPrivateFieldGet(this, _Preview_x, "f"), __classPrivateFieldGet(this, _Preview_y, "f"), __classPrivateFieldGet(this, _Preview_width, "f"), __classPrivateFieldGet(this, _Preview_height, "f"));
+    }
+    addLetter(letter) {
+        this.word += letter;
+        __classPrivateFieldGet(this, _Preview_instances, "m", _Preview_draw).call(this);
+    }
+    removeLastLetter() {
+        this.word = this.word.slice(0, this.word.length - 1);
+        __classPrivateFieldGet(this, _Preview_instances, "m", _Preview_draw).call(this);
+    }
+    erase() {
+        this.word = '';
+        __classPrivateFieldGet(this, _Preview_instances, "m", _Preview_draw).call(this);
+    }
+}
+_Preview_x = new WeakMap(), _Preview_y = new WeakMap(), _Preview_width = new WeakMap(), _Preview_height = new WeakMap(), _Preview_instances = new WeakSet(), _Preview_draw = function _Preview_draw() {
+    this.clear();
+    drawLetter(this.word, this.xw, this.yw, this.c);
+};
+class Stats {
+    constructor(xw, yw, c, x, y, width, height) {
+        this.xw = xw;
+        this.yw = yw;
+        this.c = c;
+        _Stats_instances.add(this);
+        this.word = '';
+        _Stats_x.set(this, void 0);
+        _Stats_y.set(this, void 0);
+        _Stats_width.set(this, void 0);
+        _Stats_height.set(this, void 0);
+        _Stats_score.set(this, 0);
+        _Stats_totalWords.set(this, 0);
+        _Stats_solvedWords.set(this, 0);
+        __classPrivateFieldSet(this, _Stats_x, x, "f");
+        __classPrivateFieldSet(this, _Stats_y, y, "f");
+        __classPrivateFieldSet(this, _Stats_width, width, "f");
+        __classPrivateFieldSet(this, _Stats_height, height, "f");
+    }
+    updateScore(incr) {
+        var _a;
+        __classPrivateFieldSet(this, _Stats_score, __classPrivateFieldGet(this, _Stats_score, "f") + incr, "f");
+        __classPrivateFieldSet(this, _Stats_solvedWords, (_a = __classPrivateFieldGet(this, _Stats_solvedWords, "f"), _a++, _a), "f");
+        __classPrivateFieldGet(this, _Stats_instances, "m", _Stats_draw).call(this);
+    }
+    setTotalWords(total) {
+        __classPrivateFieldSet(this, _Stats_totalWords, total, "f");
+        __classPrivateFieldGet(this, _Stats_instances, "m", _Stats_draw).call(this);
+    }
+}
+_Stats_x = new WeakMap(), _Stats_y = new WeakMap(), _Stats_width = new WeakMap(), _Stats_height = new WeakMap(), _Stats_score = new WeakMap(), _Stats_totalWords = new WeakMap(), _Stats_solvedWords = new WeakMap(), _Stats_instances = new WeakSet(), _Stats_clear = function _Stats_clear() {
+    this.c.clearRect(__classPrivateFieldGet(this, _Stats_x, "f"), __classPrivateFieldGet(this, _Stats_y, "f"), __classPrivateFieldGet(this, _Stats_width, "f"), __classPrivateFieldGet(this, _Stats_height, "f"));
+}, _Stats_draw = function _Stats_draw() {
+    __classPrivateFieldGet(this, _Stats_instances, "m", _Stats_clear).call(this);
+    this.word = `${__classPrivateFieldGet(this, _Stats_score, "f")}    ${__classPrivateFieldGet(this, _Stats_solvedWords, "f")} / ${__classPrivateFieldGet(this, _Stats_totalWords, "f")}`;
+    drawLetter(this.word, this.xw, this.yw, this.c);
+};
 class Node {
     constructor(x0, y0, x1, y1, letter, lx, ly, canvas) {
         this.x0 = x0;
@@ -132,7 +206,6 @@ class Node {
         this.lx = lx;
         this.ly = ly;
         this.canvas = canvas;
-        this.preview = document.getElementById('word');
         this.selected = false;
         this.width = x1 - x0;
         this.height = y1 - y0;
@@ -145,14 +218,11 @@ class Node {
         this.selected = true;
         drawRect(this.x0, this.y0, this.width, this.height, '#ff4721', this.canvas);
         drawLetter(this.letter, this.lx, this.ly, this.canvas);
-        this.preview.textContent += this.letter;
     }
     unselect() {
-        var _a, _b;
         this.selected = false;
         drawRect(this.x0, this.y0, this.width, this.height, '#525f94', this.canvas);
         drawLetter(this.letter, this.lx, this.ly, this.canvas);
-        this.preview.textContent = (_b = (_a = this.preview.textContent) === null || _a === void 0 ? void 0 : _a.slice(0, this.preview.textContent.length - 1)) !== null && _b !== void 0 ? _b : '';
     }
 }
 class Touches {
@@ -161,22 +231,17 @@ class Touches {
         this.dict = dict;
         _Touches_instances.add(this);
         this.ongoingTouches = [];
-        this.score = 0;
         this.rectangles = [];
         this.selectedRectangles = [];
         this.solved = new Set();
         _Touches_tableStr.set(this, void 0);
         this.padding = 0;
+        this.wordH = 0;
+        this.wordW = 0;
+        this.statsW = 0;
+        this.statsH = 0;
         this.copyTouch = (touch) => ({ identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY });
         this.compareCells = (c1, c2) => c1.x0 === c2.x0 && c1.x1 === c2.x1 && c1.y0 === c2.y0 && c1.y1 === c2.y1;
-        // colorForTouch = (touch: Touch) => {
-        //     let r = touch.identifier % 16;
-        //     let g = Math.floor(touch.identifier / 3) % 16;
-        //     let b = Math.floor(touch.identifier / 7) % 16;
-        //     // make it a hex digit
-        //     console.log('rgb', r, g, b);
-        //     return `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
-        // };
         this.ongoingTouchIndexById = (idToFind) => {
             for (let i = 0; i < this.ongoingTouches.length; i++) {
                 const id = this.ongoingTouches[i].identifier;
@@ -193,12 +258,6 @@ class Touches {
             for (let i = 0; i < touches.length; i++) {
                 // this.log(`touchstart: ${i}.`);
                 this.ongoingTouches.push(this.copyTouch(touches[i]));
-                // const color = this.colorForTouch(touches[i]!);
-                // this.log(`color of touch with id ${touches[i]!.identifier} = ${color}`);
-                // this.canvas2D.beginPath();
-                // this.canvas2D.arc(touches[i]!.pageX, touches[i]!.pageY, 4, 0, 2 * Math.PI, false); // a circle at the start
-                // this.canvas2D.fillStyle = color;
-                // this.canvas2D.fill();
                 this.selectRect(touches[i]);
             }
         };
@@ -206,23 +265,10 @@ class Touches {
             evt.preventDefault();
             const touches = evt.changedTouches;
             for (let i = 0; i < touches.length; i++) {
-                // const color = this.colorForTouch(touches[i]!);
                 const idx = this.ongoingTouchIndexById(touches[i].identifier);
                 if (idx >= 0) {
-                    // this.log(`continuing touch ${idx}`);
-                    // this.canvas2D.beginPath();
-                    // this.log(`this.canvas2D.moveTo( ${this.ongoingTouches[idx]!.pageX}, ${this.ongoingTouches[idx]!.pageY} );`);
-                    // this.canvas2D.moveTo(this.ongoingTouches[idx]!.pageX, this.ongoingTouches[idx]!.pageY);
-                    // this.log(`this.canvas2D.lineTo( ${touches[i]!.pageX}, ${touches[i]!.pageY} );`);
-                    // this.canvas2D.lineTo(touches[i]!.pageX, touches[i]!.pageY);
-                    // this.canvas2D.lineWidth = 4;
-                    // this.canvas2D.strokeStyle = color;
-                    // this.canvas2D.stroke();
                     this.selectRect(touches[i]);
                     this.ongoingTouches.splice(idx, 1, this.copyTouch(touches[i])); // swap in the new touch record
-                }
-                else {
-                    // this.log("can't figure out which touch to continue");
                 }
             }
         };
@@ -234,18 +280,9 @@ class Touches {
                 // const color = this.colorForTouch(touches[i]!);
                 let idx = this.ongoingTouchIndexById(touches[i].identifier);
                 if (idx >= 0) {
-                    // this.canvas2D.lineWidth = 4;
-                    // this.canvas2D.fillStyle = color;
-                    // this.canvas2D.beginPath();
-                    // this.canvas2D.moveTo(this.ongoingTouches[idx]!.pageX, this.ongoingTouches[idx]!.pageY);
-                    // this.canvas2D.lineTo(touches[i]!.pageX, touches[i]!.pageY);
-                    // this.canvas2D.fillRect(touches[i]!.pageX - 4, touches[i]!.pageY - 4, 8, 8); // and a square at the end
                     this.ongoingTouches.splice(idx, 1); // remove it; we're done
                     this.countScore();
                     this.resetRects();
-                }
-                else {
-                    // this.log("can't figure out which touch to end");
                 }
             }
         };
@@ -272,13 +309,11 @@ class Touches {
             word += cell.c.letter;
         console.log('tree', word, this.dict.hasWord(word.toLowerCase()));
         if (this.dict.hasWord(word.toLowerCase()) && !this.solved.has(word)) {
+            let s = 0;
             for (let i = 1; i <= this.selectedRectangles.length; i++)
-                this.score += i;
+                s += i;
+            this.stats.updateScore(s);
             this.solved.add(word);
-            const header = document.getElementById('score');
-            if (!header)
-                throw new Error('not found header with scoring!');
-            header.textContent = `Score: ${this.score}`;
         }
     }
     drawLine(x0, y0, x1, y1) {
@@ -319,11 +354,14 @@ class Touches {
                 if (this.touchMeetsCell(t, r)) {
                     if (!this.isNeighbour2Last(i, j))
                         return;
-                    if (this.isPrevious(r))
+                    if (this.isPrevious(r)) {
                         this.selectedRectangles.pop().c.unselect();
+                        this.preview.removeLastLetter();
+                    }
                     if (r.selected)
                         return;
                     r.select();
+                    this.preview.addLetter(r.letter);
                     this.selectedRectangles.push({ c: r, i, j });
                 }
                 i++;
@@ -342,6 +380,7 @@ class Touches {
         console.log('selected', this.selectedRectangles);
         for (const n of this.selectedRectangles)
             n.c.unselect();
+        this.preview.erase();
         this.selectedRectangles = [];
     }
     setPadding(padding) {
@@ -350,10 +389,18 @@ class Touches {
     drawTable(table, steps) {
         this.canvas2D.clearRect(0, 0, this.width, this.height);
         const stepW = Math.trunc(this.width / steps);
-        const stepH = Math.trunc(this.height / steps);
+        const stepH = Math.trunc(this.width / steps);
         this.steps = steps;
         this.stepH = stepH;
         this.stepW = stepW;
+        this.wordH = Math.trunc(stepH / 2);
+        this.wordW = Math.trunc(this.width / 2);
+        this.statsW = Math.trunc(this.width / 2);
+        this.statsH = this.height - Math.trunc(stepH / 2);
+        console.log(this.statsW, this.statsH, this.width, this.height);
+        this.preview = new Preview(this.wordW, this.wordH, this.canvas2D, 0, 0, this.width, stepH);
+        this.stats = new Stats(this.statsW, this.statsH, this.canvas2D, 0, stepH * (steps + 1), this.width, stepH);
+        this.stats.setTotalWords(this.dict.dictionary.size);
         this.padH = stepH * (this.padding / 200);
         this.padW = stepW * (this.padding / 200);
         __classPrivateFieldSet(this, _Touches_tableStr, table, "f");
@@ -364,8 +411,8 @@ class Touches {
 }
 _Touches_tableStr = new WeakMap(), _Touches_instances = new WeakSet(), _Touches_table = function _Touches_table() {
     this.rectangles = [];
-    let y1 = this.stepH;
-    let y0 = 0;
+    let y1 = this.stepH * 2;
+    let y0 = this.stepH;
     let letCnt = 0;
     for (let i = 0; i < this.steps; i++) {
         const buf = [];
@@ -406,11 +453,11 @@ class Game {
         __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchmove', __classPrivateFieldGet(this, _Game_touch, "f").handleMove);
     }
     configure(sqrFieldSize, font, padding = 20) {
-        __classPrivateFieldGet(this, _Game_canvasHTML, "f").height = sqrFieldSize;
+        __classPrivateFieldGet(this, _Game_canvasHTML, "f").height = Math.trunc(sqrFieldSize * 1.4);
         __classPrivateFieldGet(this, _Game_canvasHTML, "f").width = sqrFieldSize;
         __classPrivateFieldGet(this, _Game_canvasHTML, "f").style.background = '#2b3043';
         __classPrivateFieldGet(this, _Game_canvas, "f").font = font;
-        __classPrivateFieldGet(this, _Game_touch, "f").setWH(sqrFieldSize, sqrFieldSize);
+        __classPrivateFieldGet(this, _Game_touch, "f").setWH(__classPrivateFieldGet(this, _Game_canvasHTML, "f").width, __classPrivateFieldGet(this, _Game_canvasHTML, "f").height);
         __classPrivateFieldGet(this, _Game_touch, "f").setPadding(padding);
     }
     start(table, size) {
