@@ -421,8 +421,8 @@ function startup() {
         throw new Error('no canvas found!');
     const game = new Game(el, tree);
     let sqr = Math.min(window.innerHeight, window.innerWidth);
-    if (sqr > 600)
-        sqr = 600;
+    if (sqr > 1000)
+        sqr = 1000;
     game.configure(sqr, '48px Arial');
     game.start('лсоиаопмртэртомоснезпруип', 5);
 }
