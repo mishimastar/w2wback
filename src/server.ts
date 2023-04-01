@@ -48,7 +48,7 @@ const processGet = async (
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 const server = createServer(async (req, res) => {
-    console.log('Request:', new URL(req.url!, `http://${req.headers.host}`));
+    // console.log('Request:', new URL(req.url!, `http://${req.headers.host}`));
     switch (req.method) {
         case 'GET':
             try {
@@ -60,9 +60,6 @@ const server = createServer(async (req, res) => {
                     res.writeHead(status, { 'Content-Type': content });
                     res.end(data);
                 }
-                // res.statusCode = status;
-                // res.setHeader('Content-Type', 'text/html; charset=utf-8');
-                // res.end(response);
             } catch (error) {
                 console.error('Error: ', error);
                 res.statusCode = 500;

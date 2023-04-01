@@ -119,7 +119,7 @@ const drawRect = (x0, y0, w, h, color, c) => {
 const drawLetter = (letter, lx, ly, c) => {
     c.textAlign = 'center';
     c.textBaseline = 'middle';
-    c.fillStyle = 'black';
+    c.fillStyle = '#fcfefa';
     c.fillText(letter, lx, ly);
 };
 class Node {
@@ -138,19 +138,19 @@ class Node {
         this.height = y1 - y0;
     }
     draw() {
-        drawRect(this.x0, this.y0, this.width, this.height, 'blue', this.canvas);
+        drawRect(this.x0, this.y0, this.width, this.height, '#525f94', this.canvas);
         drawLetter(this.letter, this.lx, this.ly, this.canvas);
     }
     select() {
         this.selected = true;
-        drawRect(this.x0, this.y0, this.width, this.height, 'red', this.canvas);
+        drawRect(this.x0, this.y0, this.width, this.height, '#ff4721', this.canvas);
         drawLetter(this.letter, this.lx, this.ly, this.canvas);
         this.preview.textContent += this.letter;
     }
     unselect() {
         var _a, _b;
         this.selected = false;
-        drawRect(this.x0, this.y0, this.width, this.height, 'blue', this.canvas);
+        drawRect(this.x0, this.y0, this.width, this.height, '#525f94', this.canvas);
         drawLetter(this.letter, this.lx, this.ly, this.canvas);
         this.preview.textContent = (_b = (_a = this.preview.textContent) === null || _a === void 0 ? void 0 : _a.slice(0, this.preview.textContent.length - 1)) !== null && _b !== void 0 ? _b : '';
     }
@@ -357,6 +357,8 @@ class Touches {
         this.padH = stepH * (this.padding / 200);
         this.padW = stepW * (this.padding / 200);
         __classPrivateFieldSet(this, _Touches_tableStr, table, "f");
+        console.log(`${Math.trunc((this.stepH - this.padH * 2) * 0.7)}px Arial`);
+        this.canvas2D.font = `${Math.trunc((this.stepH - this.padH * 2) * 0.7)}px Arial`;
         __classPrivateFieldGet(this, _Touches_instances, "m", _Touches_table).call(this);
     }
 }
@@ -406,7 +408,7 @@ class Game {
     configure(sqrFieldSize, font, padding = 20) {
         __classPrivateFieldGet(this, _Game_canvasHTML, "f").height = sqrFieldSize;
         __classPrivateFieldGet(this, _Game_canvasHTML, "f").width = sqrFieldSize;
-        __classPrivateFieldGet(this, _Game_canvasHTML, "f").style.background = '#ff8';
+        __classPrivateFieldGet(this, _Game_canvasHTML, "f").style.background = '#2b3043';
         __classPrivateFieldGet(this, _Game_canvas, "f").font = font;
         __classPrivateFieldGet(this, _Game_touch, "f").setWH(sqrFieldSize, sqrFieldSize);
         __classPrivateFieldGet(this, _Game_touch, "f").setPadding(padding);
