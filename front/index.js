@@ -507,11 +507,10 @@ class Menu {
                         default:
                             break;
                     }
-                }
-                else {
-                    this.resetButtons();
+                    return;
                 }
             }
+            this.resetButtons();
         });
     }
     selectButton(t) {
