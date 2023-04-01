@@ -13,8 +13,9 @@ console.log(filtered.size);
 const tree = new Tree(filtered);
 
 const cfgs = new Map<number, { enough: number; epoch: number }>([
-    [5, { enough: 300, epoch: 250000 }],
-    [6, { enough: 400, epoch: 400000 }]
+    [4, { enough: 100, epoch: 200000 }],
+    [5, { enough: 180, epoch: 250000 }],
+    [6, { enough: 250, epoch: 400000 }]
 ]);
 
 const genTable = (size: number) => {

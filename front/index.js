@@ -437,7 +437,7 @@ class Menu {
         this.game = game;
         _Menu_instances.add(this);
         this.ongoingTouches = [];
-        this.buttons = ['Играть 5x5', 'Играть 6х6'];
+        this.buttons = ['Играть 4х4', 'Играть 5x5', 'Играть 6х6'];
         this.stepH = 0;
         this.rectangles = [];
         _Menu_copyTouch.set(this, (touch) => ({ identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY }));
@@ -492,6 +492,10 @@ class Menu {
                     this.resetButtons();
                     console.log('selected', b.letter);
                     switch (b.letter) {
+                        case 'Играть 4х4':
+                            __classPrivateFieldGet(this, _Menu_instances, "m", _Menu_loading).call(this);
+                            yield this.game.start(4);
+                            break;
                         case 'Играть 5x5':
                             __classPrivateFieldGet(this, _Menu_instances, "m", _Menu_loading).call(this);
                             yield this.game.start(5);
