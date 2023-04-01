@@ -508,6 +508,9 @@ class Menu {
                             break;
                     }
                 }
+                else {
+                    this.resetButtons();
+                }
             }
         });
     }
