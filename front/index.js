@@ -19,7 +19,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _LetterNode_instances, _LetterNode_end, _LetterNode_daughters, _LetterNode_markAsLast, _Tree_Tree, _Preview_instances, _Preview_x, _Preview_y, _Preview_width, _Preview_height, _Preview_draw, _Stats_instances, _Stats_x, _Stats_y, _Stats_width, _Stats_height, _Stats_score, _Stats_totalWords, _Stats_solvedWords, _Stats_clear, _Stats_draw, _Touches_instances, _Touches_tableStr, _Touches_table, _Game_canvasHTML, _Game_canvas, _Game_touch, _Game_dict;
+var _LetterNode_instances, _LetterNode_end, _LetterNode_daughters, _LetterNode_markAsLast, _Tree_Tree, _Preview_instances, _Preview_x, _Preview_y, _Preview_width, _Preview_height, _Preview_draw, _Stats_instances, _Stats_x, _Stats_y, _Stats_width, _Stats_height, _Stats_score, _Stats_totalWords, _Stats_solvedWords, _Stats_clear, _Stats_draw, _Touches_instances, _Touches_tableStr, _Touches_copyTouch, _Touches_compareCells, _Touches_table, _Menu_instances, _Menu_copyTouch, _Menu_loading, _Menu_menu, _Game_canvasHTML, _Game_canvas, _Game_touch, _Game_dict, _Game_menu, _Game_padding;
 // function readTextFile(file: string) {
 //     fetch(file)
 //         .then((response) => response.text())
@@ -240,8 +240,8 @@ class Touches {
         this.wordW = 0;
         this.statsW = 0;
         this.statsH = 0;
-        this.copyTouch = (touch) => ({ identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY });
-        this.compareCells = (c1, c2) => c1.x0 === c2.x0 && c1.x1 === c2.x1 && c1.y0 === c2.y0 && c1.y1 === c2.y1;
+        _Touches_copyTouch.set(this, (touch) => ({ identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY }));
+        _Touches_compareCells.set(this, (c1, c2) => c1.x0 === c2.x0 && c1.x1 === c2.x1 && c1.y0 === c2.y0 && c1.y1 === c2.y1);
         this.ongoingTouchIndexById = (idToFind) => {
             for (let i = 0; i < this.ongoingTouches.length; i++) {
                 const id = this.ongoingTouches[i].identifier;
@@ -252,12 +252,9 @@ class Touches {
         };
         this.handleStart = (evt) => {
             evt.preventDefault();
-            // this.log('touchstart.');
             const touches = evt.changedTouches;
-            // console.log('start touches len', touches.length);
             for (let i = 0; i < touches.length; i++) {
-                // this.log(`touchstart: ${i}.`);
-                this.ongoingTouches.push(this.copyTouch(touches[i]));
+                this.ongoingTouches.push(__classPrivateFieldGet(this, _Touches_copyTouch, "f").call(this, touches[i]));
                 this.selectRect(touches[i]);
             }
         };
@@ -266,29 +263,26 @@ class Touches {
             const touches = evt.changedTouches;
             for (let i = 0; i < touches.length; i++) {
                 const idx = this.ongoingTouchIndexById(touches[i].identifier);
-                if (idx >= 0) {
-                    this.selectRect(touches[i]);
-                    this.ongoingTouches.splice(idx, 1, this.copyTouch(touches[i])); // swap in the new touch record
-                }
+                if (idx < 0)
+                    continue;
+                this.selectRect(touches[i]);
+                this.ongoingTouches.splice(idx, 1, __classPrivateFieldGet(this, _Touches_copyTouch, "f").call(this, touches[i])); // swap in the new touch record
             }
         };
         this.handleEnd = (evt) => {
             evt.preventDefault();
-            // this.log('touchend');
             const touches = evt.changedTouches;
             for (let i = 0; i < touches.length; i++) {
-                // const color = this.colorForTouch(touches[i]!);
                 let idx = this.ongoingTouchIndexById(touches[i].identifier);
-                if (idx >= 0) {
-                    this.ongoingTouches.splice(idx, 1); // remove it; we're done
-                    this.countScore();
-                    this.resetRects();
-                }
+                if (idx < 0)
+                    continue;
+                this.ongoingTouches.splice(idx, 1); // remove it; we're done
+                this.countScore();
+                this.resetRects();
             }
         };
         this.handleCancel = (evt) => {
             evt.preventDefault();
-            // this.log('touchcancel.');
             const touches = evt.changedTouches;
             for (let i = 0; i < touches.length; i++) {
                 let idx = this.ongoingTouchIndexById(touches[i].identifier);
@@ -372,7 +366,7 @@ class Touches {
     isPrevious(c) {
         if (this.selectedRectangles.length < 2)
             return false;
-        if (this.compareCells(this.selectedRectangles[this.selectedRectangles.length - 2].c, c))
+        if (__classPrivateFieldGet(this, _Touches_compareCells, "f").call(this, this.selectedRectangles[this.selectedRectangles.length - 2].c, c))
             return true;
         return false;
     }
@@ -409,7 +403,7 @@ class Touches {
         __classPrivateFieldGet(this, _Touches_instances, "m", _Touches_table).call(this);
     }
 }
-_Touches_tableStr = new WeakMap(), _Touches_instances = new WeakSet(), _Touches_table = function _Touches_table() {
+_Touches_tableStr = new WeakMap(), _Touches_copyTouch = new WeakMap(), _Touches_compareCells = new WeakMap(), _Touches_instances = new WeakSet(), _Touches_table = function _Touches_table() {
     this.rectangles = [];
     let y1 = this.stepH * 2;
     let y0 = this.stepH;
@@ -437,36 +431,172 @@ _Touches_tableStr = new WeakMap(), _Touches_instances = new WeakSet(), _Touches_
     //     this.drawLine(0, i * this.stepH, this.width, i * this.stepH);
     // }
 };
+class Menu {
+    constructor(canvas2D, game) {
+        this.canvas2D = canvas2D;
+        this.game = game;
+        _Menu_instances.add(this);
+        this.ongoingTouches = [];
+        this.buttons = ['Играть 5x5', 'Играть 6х6'];
+        this.stepH = 0;
+        this.rectangles = [];
+        _Menu_copyTouch.set(this, (touch) => ({ identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY }));
+        this.ongoingTouchIndexById = (idToFind) => {
+            for (let i = 0; i < this.ongoingTouches.length; i++) {
+                const id = this.ongoingTouches[i].identifier;
+                if (id === idToFind)
+                    return i;
+            }
+            return -1;
+        };
+        this.handleStart = (evt) => {
+            evt.preventDefault();
+            const touches = evt.changedTouches;
+            for (let i = 0; i < touches.length; i++) {
+                this.ongoingTouches.push(__classPrivateFieldGet(this, _Menu_copyTouch, "f").call(this, touches[i]));
+                this.selectButton(touches[i]);
+            }
+        };
+        this.handleEnd = (evt) => __awaiter(this, void 0, void 0, function* () {
+            evt.preventDefault();
+            const touches = evt.changedTouches;
+            for (let i = 0; i < touches.length; i++) {
+                let idx = this.ongoingTouchIndexById(touches[i].identifier);
+                if (idx < 0)
+                    continue;
+                this.ongoingTouches.splice(idx, 1); // remove it; we're done
+                yield this.checkConfirmation(touches[i]);
+            }
+        });
+        this.handleCancel = (evt) => __awaiter(this, void 0, void 0, function* () {
+            evt.preventDefault();
+            const touches = evt.changedTouches;
+            for (let i = 0; i < touches.length; i++) {
+                let idx = this.ongoingTouchIndexById(touches[i].identifier);
+                this.ongoingTouches.splice(idx, 1); // remove it; we're done
+                yield this.checkConfirmation(touches[i]);
+            }
+        });
+        this.touchMeetsButton = (t, r) => t.pageX > r.x0 && t.pageX < r.x1 && t.pageY > r.y0 && t.pageY < r.y1;
+    }
+    resetButtons() {
+        for (const n of this.rectangles)
+            n.unselect();
+    }
+    checkConfirmation(t) {
+        return __awaiter(this, void 0, void 0, function* () {
+            for (const b of this.rectangles) {
+                if (!this.touchMeetsButton(t, b))
+                    continue;
+                if (b.selected) {
+                    this.resetButtons();
+                    console.log('selected', b.letter);
+                    switch (b.letter) {
+                        case 'Играть 5x5':
+                            __classPrivateFieldGet(this, _Menu_instances, "m", _Menu_loading).call(this);
+                            yield this.game.start(5);
+                            break;
+                        case 'Играть 6х6':
+                            __classPrivateFieldGet(this, _Menu_instances, "m", _Menu_loading).call(this);
+                            yield this.game.start(6);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        });
+    }
+    selectButton(t) {
+        for (const b of this.rectangles) {
+            if (!this.touchMeetsButton(t, b))
+                continue;
+            if (b.selected)
+                return;
+            b.select();
+        }
+    }
+    setWH(w, h) {
+        this.width = w;
+        this.height = h;
+    }
+    drawMenu() {
+        this.canvas2D.clearRect(0, 0, this.width, this.height);
+        const stepH = Math.trunc(this.height / (this.buttons.length + 1));
+        this.stepH = stepH;
+        __classPrivateFieldGet(this, _Menu_instances, "m", _Menu_menu).call(this);
+    }
+}
+_Menu_copyTouch = new WeakMap(), _Menu_instances = new WeakSet(), _Menu_loading = function _Menu_loading() {
+    this.game.removeMenuHandlers();
+    this.canvas2D.clearRect(0, 0, this.width, this.height);
+    this.canvas2D.fillText('Генерирую!', Math.trunc(this.width / 2), Math.trunc(this.height / 2));
+}, _Menu_menu = function _Menu_menu() {
+    this.rectangles = [];
+    let y0 = this.stepH - 100;
+    let y1 = this.stepH + 100;
+    const x0 = Math.trunc(this.width * 0.2);
+    const x1 = Math.trunc(this.width * 0.8);
+    let mult = 0;
+    for (const but of this.buttons) {
+        this.rectangles.push(new Node(x0, y0 + this.stepH * mult, x1, y1 + this.stepH * mult, but, Math.trunc((x1 - x0) / 2) + x0, Math.trunc((y1 - y0) / 2) + y0 + this.stepH * mult, this.canvas2D));
+        mult++;
+    }
+    console.log('all', this.rectangles);
+    for (const c of this.rectangles)
+        c.draw();
+};
 class Game {
-    constructor(canvas, dict) {
+    constructor(canvas) {
         _Game_canvasHTML.set(this, void 0);
         _Game_canvas.set(this, void 0);
         _Game_touch.set(this, void 0);
         _Game_dict.set(this, void 0);
+        _Game_menu.set(this, void 0);
+        _Game_padding.set(this, 0);
         __classPrivateFieldSet(this, _Game_canvasHTML, canvas, "f");
         __classPrivateFieldSet(this, _Game_canvas, __classPrivateFieldGet(this, _Game_canvasHTML, "f").getContext('2d'), "f");
-        __classPrivateFieldSet(this, _Game_dict, dict, "f");
-        __classPrivateFieldSet(this, _Game_touch, new Touches(__classPrivateFieldGet(this, _Game_canvas, "f"), __classPrivateFieldGet(this, _Game_dict, "f")), "f");
-        __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchstart', __classPrivateFieldGet(this, _Game_touch, "f").handleStart);
-        __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchend', __classPrivateFieldGet(this, _Game_touch, "f").handleEnd);
-        __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchcancel', __classPrivateFieldGet(this, _Game_touch, "f").handleCancel);
-        __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchmove', __classPrivateFieldGet(this, _Game_touch, "f").handleMove);
+        __classPrivateFieldSet(this, _Game_menu, new Menu(__classPrivateFieldGet(this, _Game_canvas, "f"), this), "f");
     }
     configure(sqrFieldSize, font, padding = 20) {
-        __classPrivateFieldGet(this, _Game_canvasHTML, "f").height = Math.trunc(sqrFieldSize * 1.4);
+        __classPrivateFieldGet(this, _Game_canvasHTML, "f").height = sqrFieldSize;
         __classPrivateFieldGet(this, _Game_canvasHTML, "f").width = sqrFieldSize;
         __classPrivateFieldGet(this, _Game_canvasHTML, "f").style.background = '#2b3043';
         __classPrivateFieldGet(this, _Game_canvas, "f").font = font;
-        __classPrivateFieldGet(this, _Game_touch, "f").setWH(__classPrivateFieldGet(this, _Game_canvasHTML, "f").width, __classPrivateFieldGet(this, _Game_canvasHTML, "f").height);
-        __classPrivateFieldGet(this, _Game_touch, "f").setPadding(padding);
+        __classPrivateFieldGet(this, _Game_menu, "f").setWH(__classPrivateFieldGet(this, _Game_canvasHTML, "f").width, __classPrivateFieldGet(this, _Game_canvasHTML, "f").height);
+        __classPrivateFieldSet(this, _Game_padding, padding, "f");
     }
-    start(table, size) {
-        __classPrivateFieldGet(this, _Game_touch, "f").drawTable(table, size);
+    start(size) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const init = yield LoadTable(size);
+            __classPrivateFieldGet(this, _Game_canvasHTML, "f").height = Math.trunc(__classPrivateFieldGet(this, _Game_canvasHTML, "f").height * (1 / size) * (size + 2));
+            const tree = new Tree(new Set(init.dict));
+            __classPrivateFieldSet(this, _Game_dict, tree, "f");
+            __classPrivateFieldSet(this, _Game_touch, new Touches(__classPrivateFieldGet(this, _Game_canvas, "f"), __classPrivateFieldGet(this, _Game_dict, "f")), "f");
+            __classPrivateFieldGet(this, _Game_touch, "f").setWH(__classPrivateFieldGet(this, _Game_canvasHTML, "f").width, __classPrivateFieldGet(this, _Game_canvasHTML, "f").height);
+            __classPrivateFieldGet(this, _Game_touch, "f").setPadding(__classPrivateFieldGet(this, _Game_padding, "f"));
+            __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchstart', __classPrivateFieldGet(this, _Game_touch, "f").handleStart);
+            __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchend', __classPrivateFieldGet(this, _Game_touch, "f").handleEnd);
+            __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchcancel', __classPrivateFieldGet(this, _Game_touch, "f").handleCancel);
+            __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchmove', __classPrivateFieldGet(this, _Game_touch, "f").handleMove);
+            __classPrivateFieldGet(this, _Game_touch, "f").drawTable(init.table, size);
+        });
+    }
+    removeMenuHandlers() {
+        __classPrivateFieldGet(this, _Game_canvasHTML, "f").removeEventListener('touchstart', __classPrivateFieldGet(this, _Game_menu, "f").handleStart);
+        __classPrivateFieldGet(this, _Game_canvasHTML, "f").removeEventListener('touchend', __classPrivateFieldGet(this, _Game_menu, "f").handleEnd);
+        __classPrivateFieldGet(this, _Game_canvasHTML, "f").removeEventListener('touchcancel', __classPrivateFieldGet(this, _Game_menu, "f").handleCancel);
+    }
+    drawMenu() {
+        __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchstart', __classPrivateFieldGet(this, _Game_menu, "f").handleStart);
+        __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchend', __classPrivateFieldGet(this, _Game_menu, "f").handleEnd);
+        __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchcancel', __classPrivateFieldGet(this, _Game_menu, "f").handleCancel);
+        __classPrivateFieldGet(this, _Game_menu, "f").drawMenu();
     }
 }
-_Game_canvasHTML = new WeakMap(), _Game_canvas = new WeakMap(), _Game_touch = new WeakMap(), _Game_dict = new WeakMap();
-const LoadTable = () => __awaiter(void 0, void 0, void 0, function* () {
-    const resp = yield fetch('/gettable');
+_Game_canvasHTML = new WeakMap(), _Game_canvas = new WeakMap(), _Game_touch = new WeakMap(), _Game_dict = new WeakMap(), _Game_menu = new WeakMap(), _Game_padding = new WeakMap();
+const LoadTable = (size) => __awaiter(void 0, void 0, void 0, function* () {
+    const resp = yield fetch('/gettable', { headers: { size: String(size) } });
     const out = yield resp.json();
     return out;
 });
@@ -475,14 +605,13 @@ function startup() {
         const el = document.getElementById('canvas');
         if (!el)
             throw new Error('no canvas found!');
-        const init = yield LoadTable();
-        const tree = new Tree(new Set(init.dict));
-        const game = new Game(el, tree);
+        const game = new Game(el);
         let sqr = Math.min(window.innerHeight, window.innerWidth);
         if (sqr > 1000)
             sqr = 1000;
         game.configure(sqr, '48px Arial');
-        game.start(init.table, 5);
+        game.drawMenu();
+        // game.start(init.table, 5);
     });
 }
 document.addEventListener('DOMContentLoaded', startup);

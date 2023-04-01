@@ -12,14 +12,21 @@ console.log(filtered);
 console.log(filtered.size);
 const tree = new Tree(filtered);
 
-const genTable = () => {
+const cfg = new Map<number, number>([
+    [5, 300],
+    [6, 400]
+]);
+
+const genTable = (size: number) => {
     const steps = 1000000;
     const logSteps = 10000;
-    const Gen = new Generator(25, steps, 1);
+    const Gen = new Generator(size ** 2, steps, 1);
 
     let maxWords = 0;
     let bestTable = '';
     let bestStep = 0;
+
+    const enough = cfg.get(size)!;
 
     const results: number[] = [];
 
@@ -33,14 +40,14 @@ const genTable = () => {
     let previousWords = 0;
     for (let i = 0; i < steps; i++) {
         const table = Gen.buildString();
-        const matrix = new Matrix(table, 5);
+        const matrix = new Matrix(table, size);
         const words = matrix.divePerf(tree);
         results.push(words);
         if (words > maxWords) {
             maxWords = words;
             bestTable = table;
             bestStep = i;
-            if (words > 220) {
+            if (words > enough) {
                 console.log(
                     table,
                     'words:',
@@ -82,10 +89,10 @@ const genTable = () => {
     return bestTable;
 };
 
-export const BuildGame = (): { table: string; dict: string[] } => {
-    const table = genTable();
+export const BuildGame = (size: number): { table: string; dict: string[] } => {
+    const table = genTable(size);
     // const table = 'лсоиаопмртэртомоснезпруип';
-    const matrix = new Matrix(table, 5, [0, 1], [4, 3], [1, 3], [0, 2]);
+    const matrix = new Matrix(table, size);
     // console.log(matrix.m);
     matrix.dive(tree);
     // console.log(matrix.result.length);

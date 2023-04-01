@@ -37,7 +37,9 @@ const processGet = async (
             return [readFileSync('./front/tree.js.map', { encoding: 'utf-8' }), 200, mime.js, undefined];
 
         case '/gettable':
-            const resp = JSON.stringify(BuildGame());
+            console.log('headers', req.headers);
+
+            const resp = JSON.stringify(BuildGame(Number(req.headers.size)));
             console.log('=====================================', resp);
             return [resp, 200, 'application/json', undefined];
 

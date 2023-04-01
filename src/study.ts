@@ -1,11 +1,16 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import { Matrix } from './matrix';
 import { Generator } from './nn';
 import { Tree } from './tree';
 
-const arr = JSON.parse(readFileSync('./ourCustomExtented2.json', { encoding: 'utf-8' }));
-
+const raw = readFileSync('./dictionary.txt', { encoding: 'utf-8' });
+const arr = raw.split(',');
 const filtered = new Set<string>();
+for (const w of arr) filtered.add(w.toLowerCase());
+
+// const arr = JSON.parse(readFileSync('./ourCustomExtented2.json', { encoding: 'utf-8' }));
+
+// const filtered = new Set<string>();
 
 for (const word of arr) {
     if (!word || word.includes('-') || word.includes('.')) continue;
@@ -15,7 +20,7 @@ for (const word of arr) {
 const tree = new Tree(filtered);
 const steps = 1000000;
 const logSteps = 25000;
-const Gen = new Generator(25, steps, 1);
+const Gen = new Generator(36, steps, 1);
 
 let maxWords = 0;
 let bestTable = '';
@@ -34,7 +39,7 @@ const countAvg = (last: number, iteration: number, res: number[]) => {
 let previousWords = 0;
 for (let i = 0; i < steps; i++) {
     const table = Gen.buildString();
-    const matrix = new Matrix(table, 5);
+    const matrix = new Matrix(table, 6);
     const words = matrix.divePerf(tree);
     results.push(words);
     if (words > maxWords) {
@@ -66,11 +71,11 @@ for (let i = 0; i < steps; i++) {
 
 console.log('RESULT     maxWords:', maxWords, 'bestTable:', bestTable, 'STEPS:', steps, 'best step:', bestStep);
 Gen.stats();
-Gen.saveModel();
+// Gen.saveModel();
 
-let out = '';
-for (let i = 0; i < results.length; i++) out += `${i},${results[i]}\n`;
-writeFileSync('./data2.csv', out);
-let out2 = '';
-for (let i = 0; i < resAvg.length; i++) out2 += `${resAvg[i]![0]},${resAvg[i]![1]}\n`;
-writeFileSync('./data3.csv', out2);
+// let out = '';
+// for (let i = 0; i < results.length; i++) out += `${i},${results[i]}\n`;
+// writeFileSync('./data2.csv', out);
+// let out2 = '';
+// for (let i = 0; i < resAvg.length; i++) out2 += `${resAvg[i]![0]},${resAvg[i]![1]}\n`;
+// writeFileSync('./data3.csv', out2);
