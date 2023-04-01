@@ -42,7 +42,8 @@ const genTable = (size: number) => {
     for (let i = 0; i < steps; i++) {
         const table = Gen.buildString();
         const matrix = new Matrix(table, size);
-        const words = matrix.divePerf(tree);
+        matrix.dive(tree);
+        const words = matrix.studyHowMuchWords();
         results.push(words);
         if (words > maxWords) {
             maxWords = words;
