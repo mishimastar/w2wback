@@ -174,6 +174,14 @@ export class Matrix {
         return set.size;
     }
 
+    studyWords() {
+        this.prepareRes();
+        const set = new Set<string>();
+        for (const word of this.resCoords) set.add(this.#buildWordString(word));
+
+        return set;
+    }
+
     prepareRes() {
         for (const word of this.result) {
             const w: { i: number; j: number }[] = [];

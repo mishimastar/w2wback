@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { Matrix } from './matrix';
 import { Generator } from './nn';
 import { Tree } from './tree';
@@ -6,7 +6,7 @@ import { Tree } from './tree';
 const raw = readFileSync('./dictionary.txt', { encoding: 'utf-8' });
 const arr = raw.split(',');
 const filtered = new Set<string>();
-for (const w of arr) filtered.add(w.toLowerCase());
+for (const w of arr) if (w.length > 3) filtered.add(w.toLowerCase());
 
 // const arr = JSON.parse(readFileSync('./ourCustomExtented2.json', { encoding: 'utf-8' }));
 
@@ -17,11 +17,11 @@ for (const word of arr) {
     filtered.add(word.trim());
 }
 
-const size = 6;
+const size = 5;
 
 const tree = new Tree(filtered);
-const steps = 200000;
-const logSteps = 25000;
+const steps = 500000;
+const logSteps = 10000;
 const Gen = new Generator(size ** 2, steps, 1);
 
 let maxWords = 0;
@@ -76,9 +76,9 @@ console.log('RESULT     maxWords:', maxWords, 'bestTable:', bestTable, 'STEPS:',
 Gen.stats();
 // Gen.saveModel();
 
-// let out = '';
-// for (let i = 0; i < results.length; i++) out += `${i},${results[i]}\n`;
-// writeFileSync('./data2.csv', out);
-// let out2 = '';
-// for (let i = 0; i < resAvg.length; i++) out2 += `${resAvg[i]![0]},${resAvg[i]![1]}\n`;
-// writeFileSync('./data3.csv', out2);
+let out = '';
+for (let i = 0; i < results.length; i++) out += `${i},${results[i]}\n`;
+writeFileSync('./data2.csv', out);
+let out2 = '';
+for (let i = 0; i < resAvg.length; i++) out2 += `${resAvg[i]![0]},${resAvg[i]![1]}\n`;
+writeFileSync('./data3.csv', out2);

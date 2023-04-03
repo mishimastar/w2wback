@@ -44,11 +44,13 @@ export class Let {
     }
 
     increase(mult: number) {
-        this.weight += Math.random() * mult;
+        this.weight += 1 * mult;
+        // this.weight += Math.random() * mult;
     }
 
     reduce(mult: number) {
-        this.weight -= Math.random() * mult;
+        this.weight -= 1 * mult;
+        // this.weight -= Math.random() * mult;
     }
 }
 
@@ -58,13 +60,20 @@ export class Generator {
     lastChanged: number;
     epoch: number;
 
+    tEpoch2Len: number;
+
     badResCounter: number;
     goodResCounter: number;
+    k: number;
+    m: number;
 
-    constructor(strLen: number, public totalEpoch: number, public rewardSpeed: number) {
+    constructor(public strLen: number, public totalEpoch: number, public rewardSpeed: number) {
         this.weights = [];
         this.lastOut = [];
         this.lastChanged = 0;
+        this.tEpoch2Len = Math.trunc(totalEpoch / 25);
+        this.k = Math.pow(alph.length, 1 / totalEpoch);
+        this.m = Math.pow(alph.length, -(1 / totalEpoch));
         this.epoch = 0;
         this.badResCounter = 0;
         this.goodResCounter = 0;
@@ -85,7 +94,9 @@ export class Generator {
 
     buildString() {
         let out = '';
-        const dia = (alph.length * (this.totalEpoch - this.epoch)) / this.totalEpoch;
+        const dia = Math.pow(this.m, this.epoch) * alph.length;
+        // const dia = -Math.pow(this.k, this.epoch) + alph.length;
+        // const dia = (alph.length * (this.tEpoch2Len - Math.trunc(this.epoch / this.strLen))) / this.tEpoch2Len;
         const index = Math.trunc(Math.random() * dia);
         // console.log('='.repeat(20), this.lastOut.join(','));
 

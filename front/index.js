@@ -19,14 +19,124 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _LetterNode_instances, _LetterNode_end, _LetterNode_daughters, _LetterNode_markAsLast, _Tree_Tree, _Preview_instances, _Preview_x, _Preview_y, _Preview_width, _Preview_height, _Preview_draw, _Stats_instances, _Stats_x, _Stats_y, _Stats_width, _Stats_height, _Stats_score, _Stats_totalWords, _Stats_solvedWords, _Stats_clear, _Stats_draw, _Touches_instances, _Touches_tableStr, _Touches_copyTouch, _Touches_compareCells, _Touches_table, _Menu_instances, _Menu_copyTouch, _Menu_loading, _Menu_menu, _Game_canvasHTML, _Game_canvas, _Game_touch, _Game_dict, _Game_menu, _Game_padding;
+var _LetterNode_instances, _LetterNode_end, _LetterNode_daughters, _LetterNode_markAsLast, _Tree_Tree, _Preview_instances, _Preview_x, _Preview_y, _Preview_width, _Preview_height, _Preview_draw, _Stats_instances, _Stats_x, _Stats_y, _Stats_width, _Stats_height, _Stats_score, _Stats_totalWords, _Stats_solvedWords, _Stats_clear, _Stats_draw, _Touches_instances, _Touches_tableStr, _Touches_copyTouch, _Touches_compareCells, _Touches_table, _Touches_drawTable, _Touches_drawHive, _Menu_instances, _Menu_copyTouch, _Menu_loading, _Menu_menu, _Game_canvasHTML, _Game_canvas, _Game_touch, _Game_dict, _Game_menu, _Game_padding;
 // function readTextFile(file: string) {
 //     fetch(file)
 //         .then((response) => response.text())
 //         .then((text) => console.log(text));
 // }
 // readTextFile('file:///home/mishimastar/Documents/w2wsolver/dictionary.txt');
-export class LetterNode {
+const ALPHA = (2 * Math.PI) / 6;
+// 500/(3*( Math.cos((2 * Math.PI) / 6) + 1) +1)
+// 90.9090909090909
+// const g17 = [
+//     [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+//     [0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+//     [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+//     [1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+//     [0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+//     [1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+//     [0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0],
+//     [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+//     [0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0],
+//     [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+//     [0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0],
+//     [0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1],
+//     [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+//     [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1],
+//     [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1],
+//     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0],
+//     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0]
+// ];
+const t4 = [
+    [0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0]
+];
+const t5 = [
+    [0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0]
+];
+const t6 = [
+    [0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0]
+];
+const graphCfg = new Map([
+    [4, t4],
+    [5, t5],
+    [6, t6]
+]);
+class LetterNode {
     constructor(letter, last) {
         _LetterNode_instances.add(this);
         _LetterNode_end.set(this, void 0);
@@ -117,6 +227,24 @@ const drawRect = (x0, y0, w, h, color, c) => {
     c.fillStyle = color;
     c.fill();
 };
+function drawHexagon(x, y, r, color, c) {
+    c.beginPath();
+    for (let i = 0; i < 6; i++)
+        c.lineTo(x + r * Math.cos(ALPHA * i), y + r * Math.sin(ALPHA * i));
+    c.fillStyle = color;
+    c.fill();
+    c.closePath();
+    c.stroke();
+}
+// function drawGrid(width: number, height: number, r: number, c: CanvasRenderingContext2D) {
+//     for (let y = r; y + r * Math.sin(ALPHA) < height; y += r * Math.sin(ALPHA))
+//         for (
+//             let x = r, j = 0;
+//             x + r * (1 + Math.cos(ALPHA)) < width;
+//             x += r * (1 + Math.cos(ALPHA)), y += (-1) ** j++ * r * Math.sin(ALPHA)
+//         )
+//             drawHexagon(x, y, r, '', c);
+// }
 const drawLetter = (letter, lx, ly, c) => {
     c.textAlign = 'center';
     c.textBaseline = 'middle';
@@ -226,14 +354,56 @@ class Node {
         drawLetter(this.letter, this.lx, this.ly, this.canvas);
     }
 }
+class GraphNode {
+    constructor(index, x0, y0, x1, y1, letter, lx, ly, canvas) {
+        this.index = index;
+        this.x0 = x0;
+        this.y0 = y0;
+        this.x1 = x1;
+        this.y1 = y1;
+        this.letter = letter;
+        this.lx = lx;
+        this.ly = ly;
+        this.canvas = canvas;
+        this.selected = false;
+        this.neighbours = new Map();
+        this.width = x1 - x0;
+        this.height = y1 - y0;
+        this.radius = Math.trunc(this.width / 2);
+        this.radius2 = Math.trunc(Math.pow(this.radius, 2));
+    }
+    draw() {
+        drawRect(this.x0, this.y0, this.width, this.height, '#525f94', this.canvas);
+        // drawHexagon(this.lx, this.ly, this.radius, '#525f94', this.canvas);
+        drawLetter(this.letter, this.lx, this.ly, this.canvas);
+    }
+    select() {
+        this.selected = true;
+        drawRect(this.x0, this.y0, this.width, this.height, '#ff4721', this.canvas);
+        // drawHexagon(this.lx, this.ly, this.radius, '#ff4721', this.canvas);
+        drawLetter(this.letter, this.lx, this.ly, this.canvas);
+    }
+    unselect() {
+        this.selected = false;
+        drawRect(this.x0, this.y0, this.width, this.height, '#525f94', this.canvas);
+        // drawHexagon(this.lx, this.ly, this.radius, '#525f94', this.canvas);
+        drawLetter(this.letter, this.lx, this.ly, this.canvas);
+    }
+    hasNeighbour(index) {
+        return this.neighbours.has(index);
+    }
+    addNeighbour(node) {
+        this.neighbours.set(node.index, node);
+    }
+}
 class Touches {
     constructor(canvas2D, dict) {
         this.canvas2D = canvas2D;
         this.dict = dict;
         _Touches_instances.add(this);
         this.ongoingTouches = [];
-        this.rectangles = [];
-        this.selectedRectangles = [];
+        this.nodes = [];
+        this.selectedNodes = [];
         this.solved = new Set();
         _Touches_tableStr.set(this, void 0);
         this.padding = 0;
@@ -242,7 +412,7 @@ class Touches {
         this.statsW = 0;
         this.statsH = 0;
         _Touches_copyTouch.set(this, (touch) => ({ identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY }));
-        _Touches_compareCells.set(this, (c1, c2) => c1.x0 === c2.x0 && c1.x1 === c2.x1 && c1.y0 === c2.y0 && c1.y1 === c2.y1);
+        _Touches_compareCells.set(this, (c1, c2) => c1.index === c2.index);
         this.ongoingTouchIndexById = (idToFind) => {
             for (let i = 0; i < this.ongoingTouches.length; i++) {
                 const id = this.ongoingTouches[i].identifier;
@@ -300,12 +470,12 @@ class Touches {
     }
     countScore() {
         let word = '';
-        for (const cell of this.selectedRectangles)
-            word += cell.c.letter;
+        for (const cell of this.selectedNodes)
+            word += cell.letter;
         console.log('tree', word, this.dict.hasWord(word.toLowerCase()));
         if (this.dict.hasWord(word.toLowerCase()) && !this.solved.has(word)) {
             let s = 0;
-            for (let i = 1; i <= this.selectedRectangles.length; i++)
+            for (let i = 1; i <= this.selectedNodes.length; i++)
                 s += i;
             this.stats.updateScore(s);
             this.solved.add(word);
@@ -318,119 +488,155 @@ class Touches {
         this.canvas2D.lineWidth = 4;
         this.canvas2D.stroke();
     }
-    isNeighbour2Last(i, j) {
-        const last = this.selectedRectangles[this.selectedRectangles.length - 1];
+    isNeighbour2Last(node) {
+        const last = this.selectedNodes[this.selectedNodes.length - 1];
         // console.log(last, i, j);
         if (!last)
             return true;
-        if (last.i + 1 === i && last.j === j)
-            return true;
-        if (last.i - 1 === i && last.j === j)
-            return true;
-        if (last.i === i && last.j + 1 === j)
-            return true;
-        if (last.i === i && last.j - 1 === j)
-            return true;
-        if (last.i - 1 === i && last.j - 1 === j)
-            return true;
-        if (last.i + 1 === i && last.j - 1 === j)
-            return true;
-        if (last.i + 1 === i && last.j + 1 === j)
-            return true;
-        if (last.i - 1 === i && last.j + 1 === j)
-            return true;
-        return false;
+        return last.hasNeighbour(node.index);
     }
     selectRect(t) {
-        let j = 0;
-        for (const row of this.rectangles) {
-            let i = 0;
-            for (const r of row) {
-                if (this.touchMeetsCell(t, r)) {
-                    if (!this.isNeighbour2Last(i, j))
-                        return;
-                    if (this.isPrevious(r)) {
-                        this.selectedRectangles.pop().c.unselect();
-                        this.preview.removeLastLetter();
-                    }
-                    if (r.selected)
-                        return;
-                    r.select();
-                    this.preview.addLetter(r.letter);
-                    this.selectedRectangles.push({ c: r, i, j });
+        for (const node of this.nodes) {
+            if (this.touchMeetsCell(t, node)) {
+                if (!this.isNeighbour2Last(node))
+                    return;
+                if (this.isPrevious(node)) {
+                    this.selectedNodes.pop().unselect();
+                    this.preview.removeLastLetter();
                 }
-                i++;
+                if (node.selected)
+                    return;
+                node.select();
+                this.preview.addLetter(node.letter);
+                this.selectedNodes.push(node);
             }
-            j++;
         }
     }
     isPrevious(c) {
-        if (this.selectedRectangles.length < 2)
+        if (this.selectedNodes.length < 2)
             return false;
-        if (__classPrivateFieldGet(this, _Touches_compareCells, "f").call(this, this.selectedRectangles[this.selectedRectangles.length - 2].c, c))
+        if (__classPrivateFieldGet(this, _Touches_compareCells, "f").call(this, this.selectedNodes[this.selectedNodes.length - 2], c))
             return true;
         return false;
     }
     resetRects() {
-        console.log('selected', this.selectedRectangles);
-        for (const n of this.selectedRectangles)
-            n.c.unselect();
+        console.log('selected', this.selectedNodes);
+        for (const n of this.selectedNodes)
+            n.unselect();
         this.preview.erase();
-        this.selectedRectangles = [];
+        this.selectedNodes = [];
     }
     setPadding(padding) {
         this.padding = padding;
     }
-    drawTable(table, steps) {
-        this.canvas2D.clearRect(0, 0, this.width, this.height);
-        const stepW = Math.trunc(this.width / steps);
-        const stepH = Math.trunc(this.width / steps);
-        this.steps = steps;
-        this.stepH = stepH;
-        this.stepW = stepW;
-        this.wordH = Math.trunc(stepH / 2);
-        this.wordW = Math.trunc(this.width / 2);
-        this.statsW = Math.trunc(this.width / 2);
-        this.statsH = this.height - Math.trunc(stepH / 2);
-        console.log(this.statsW, this.statsH, this.width, this.height);
-        this.preview = new Preview(this.wordW, this.wordH, this.canvas2D, 0, 0, this.width, stepH);
-        this.stats = new Stats(this.statsW, this.statsH, this.canvas2D, 0, stepH * (steps + 1), this.width, stepH);
-        this.stats.setTotalWords(this.dict.dictionary.size);
-        this.padH = stepH * (this.padding / 200);
-        this.padW = stepW * (this.padding / 200);
-        __classPrivateFieldSet(this, _Touches_tableStr, table, "f");
-        console.log(`${Math.trunc((this.stepH - this.padH * 2) * 0.7)}px Arial`);
-        this.canvas2D.font = `${Math.trunc((this.stepH - this.padH * 2) * 0.7)}px Arial`;
-        __classPrivateFieldGet(this, _Touches_instances, "m", _Touches_table).call(this);
+    drawGame(table, steps) {
+        if (steps <= 6)
+            __classPrivateFieldGet(this, _Touches_instances, "m", _Touches_drawTable).call(this, table, steps);
+        else
+            __classPrivateFieldGet(this, _Touches_instances, "m", _Touches_drawHive).call(this, table, steps);
     }
 }
 _Touches_tableStr = new WeakMap(), _Touches_copyTouch = new WeakMap(), _Touches_compareCells = new WeakMap(), _Touches_instances = new WeakSet(), _Touches_table = function _Touches_table() {
-    this.rectangles = [];
+    this.nodes = [];
     let y1 = this.stepH * 2;
     let y0 = this.stepH;
     let letCnt = 0;
     for (let i = 0; i < this.steps; i++) {
-        const buf = [];
         let x0 = 0;
         let x1 = this.stepW;
         for (let j = 0; j < this.steps; j++) {
-            buf.push(new Node(x0 + this.padW, y0 + this.padH, x1 - this.padW, y1 - this.padH, __classPrivateFieldGet(this, _Touches_tableStr, "f")[letCnt].toUpperCase(), Math.trunc((x1 - x0) / 2) + x0, Math.trunc((y1 - y0) / 2) + y0, this.canvas2D));
+            this.nodes.push(new GraphNode(letCnt, x0 + this.padW, y0 + this.padH, x1 - this.padW, y1 - this.padH, __classPrivateFieldGet(this, _Touches_tableStr, "f")[letCnt].toUpperCase(), Math.trunc((x1 - x0) / 2) + x0, Math.trunc((y1 - y0) / 2) + y0, this.canvas2D));
             x0 += this.stepW;
             x1 += this.stepW;
             letCnt++;
         }
-        this.rectangles.push(buf);
         y1 += this.stepH;
         y0 += this.stepH;
     }
-    console.log('all', this.rectangles);
-    for (const row of this.rectangles)
-        for (const c of row)
-            c.draw();
+    console.log('all', this.nodes);
+    for (let j = 0; j < __classPrivateFieldGet(this, _Touches_tableStr, "f").length; j++) {
+        const graphConfig = graphCfg.get(this.steps)[j];
+        for (let i = 0; i < graphConfig.length; i++) {
+            if (!graphConfig[i])
+                continue;
+            this.nodes[j].addNeighbour(this.nodes[i]);
+        }
+    }
+    for (const node of this.nodes)
+        node.draw();
     // for (let i = 1; i < this.steps; i++) {
     //     this.drawLine(i * this.stepW, 0, i * this.stepW, this.height);
     //     this.drawLine(0, i * this.stepH, this.width, i * this.stepH);
     // }
+}, _Touches_drawTable = function _Touches_drawTable(table, steps) {
+    this.canvas2D.clearRect(0, 0, this.width, this.height);
+    const stepW = Math.trunc(this.width / steps);
+    const stepH = Math.trunc(this.width / steps);
+    this.steps = steps;
+    this.stepH = stepH;
+    this.stepW = stepW;
+    this.wordH = Math.trunc(stepH / 2);
+    this.wordW = Math.trunc(this.width / 2);
+    this.statsW = Math.trunc(this.width / 2);
+    this.statsH = this.height - Math.trunc(stepH / 2);
+    console.log(this.statsW, this.statsH, this.width, this.height);
+    this.preview = new Preview(this.wordW, this.wordH, this.canvas2D, 0, 0, this.width, stepH);
+    this.stats = new Stats(this.statsW, this.statsH, this.canvas2D, 0, stepH * (steps + 1), this.width, stepH);
+    this.stats.setTotalWords(this.dict.dictionary.size);
+    this.padH = stepH * (this.padding / 200);
+    this.padW = stepW * (this.padding / 200);
+    __classPrivateFieldSet(this, _Touches_tableStr, table, "f");
+    console.log(`${Math.trunc((this.stepH - this.padH * 2) * 0.7)}px Arial`);
+    this.canvas2D.font = `${Math.trunc((this.stepH - this.padH * 2) * 0.7)}px Arial`;
+    __classPrivateFieldGet(this, _Touches_instances, "m", _Touches_table).call(this);
+}, _Touches_drawHive = function _Touches_drawHive(table, cells) {
+    const outerRadius = Math.trunc(Math.min(this.width / (5 * (Math.cos(ALPHA) + 1) + 1), this.height / (5 * Math.sin(ALPHA) + 1)));
+    console.log(outerRadius);
+    // 90.9090909090909 > 800 / (3 * (Math.cos((2 * Math.PI) / 6) + 1) + 1);
+    // 145.45454545454547 > 800 / (4 * (Math.cos((2 * Math.PI) / 6) + 1) + 1);
+    // 114.28571428571429 > 500 / (4 * (Math.sin((2 * Math.PI) / 6) + 1) + 1);
+    // 59.07301480239406 > 800 / (4 * (Math.sin((2 * Math.PI) / 6) + 1) + 1);
+    console.log(table, cells);
+    this.canvas2D.clearRect(0, 0, this.width, this.height);
+    // const startX = outerRadius;
+    // const startY = outerRadius * 2;
+    let y = outerRadius * 2;
+    for (let x = outerRadius, j = 1; j < 6; x += outerRadius * (1 + Math.cos(ALPHA)), y += Math.pow((-1), j++) * outerRadius * Math.sin(ALPHA)) {
+        drawHexagon(x, y, outerRadius, 'red', this.canvas2D);
+    }
+    y += outerRadius * 3 * Math.sin(ALPHA);
+    for (let x = outerRadius, j = 1; j < 6; x += outerRadius * (1 + Math.cos(ALPHA)), y += Math.pow((-1), j++) * outerRadius * Math.sin(ALPHA)) {
+        drawHexagon(x, y, outerRadius, 'blue', this.canvas2D);
+    }
+    y += outerRadius * 3 * Math.sin(ALPHA);
+    for (let x = outerRadius, j = 1; j < 6; x += outerRadius * (1 + Math.cos(ALPHA)), y += Math.pow((-1), j++) * outerRadius * Math.sin(ALPHA)) {
+        drawHexagon(x, y, outerRadius, 'red', this.canvas2D);
+    }
+    y += outerRadius * 3 * Math.sin(ALPHA);
+    for (let x = outerRadius, j = 1; j < 6; x += outerRadius * (1 + Math.cos(ALPHA)), y += Math.pow((-1), j++) * outerRadius * Math.sin(ALPHA)) {
+        drawHexagon(x, y, outerRadius, 'blue', this.canvas2D);
+    }
+    // for (let y = 2 * outerRadius; y + outerRadius * Math.sin(ALPHA) < this.height; y += outerRadius * Math.sin(ALPHA)) {
+    // }
+    // const stepW = Math.trunc(this.width / steps);
+    // const stepH = Math.trunc(this.width / steps);
+    // this.steps = steps;
+    // this.stepH = stepH;
+    // this.stepW = stepW;
+    // this.wordH = Math.trunc(stepH / 2);
+    // this.wordW = Math.trunc(this.width / 2);
+    // this.statsW = Math.trunc(this.width / 2);
+    // this.statsH = this.height - Math.trunc(stepH / 2);
+    // console.log(this.statsW, this.statsH, this.width, this.height);
+    // this.preview = new Preview(this.wordW, this.wordH, this.canvas2D, 0, 0, this.width, stepH);
+    // this.stats = new Stats(this.statsW, this.statsH, this.canvas2D, 0, stepH * (steps + 1), this.width, stepH);
+    // this.stats.setTotalWords(this.dict.dictionary.size);
+    // this.padH = stepH * (this.padding / 200);
+    // this.padW = stepW * (this.padding / 200);
+    // this.#tableStr = table;
+    // console.log(`${Math.trunc((this.stepH - this.padH * 2) * 0.7)}px Arial`);
+    // this.canvas2D.font = `${Math.trunc((this.stepH - this.padH * 2) * 0.7)}px Arial`;
+    // this.#table();
 };
 class Menu {
     constructor(canvas2D, game) {
@@ -438,7 +644,7 @@ class Menu {
         this.game = game;
         _Menu_instances.add(this);
         this.ongoingTouches = [];
-        this.buttons = ['Играть 4х4', 'Играть 5x5', 'Играть 6х6'];
+        this.buttons = ['Играть 4х4', 'Играть 5x5', 'Играть 6х6', 'Улей 17'];
         this.stepH = 0;
         this.rectangles = [];
         _Menu_copyTouch.set(this, (touch) => ({ identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY }));
@@ -504,6 +710,10 @@ class Menu {
                         case 'Играть 6х6':
                             __classPrivateFieldGet(this, _Menu_instances, "m", _Menu_loading).call(this);
                             yield this.game.start(6);
+                            break;
+                        case 'Улей 17':
+                            __classPrivateFieldGet(this, _Menu_instances, "m", _Menu_loading).call(this);
+                            yield this.game.start(17);
                             break;
                         default:
                             break;
@@ -576,7 +786,10 @@ class Game {
     start(size) {
         return __awaiter(this, void 0, void 0, function* () {
             const init = yield LoadTable(size);
-            __classPrivateFieldGet(this, _Game_canvasHTML, "f").height = Math.trunc(__classPrivateFieldGet(this, _Game_canvasHTML, "f").height * (1 / size) * (size + 2));
+            if (size <= 6)
+                __classPrivateFieldGet(this, _Game_canvasHTML, "f").height = Math.trunc(__classPrivateFieldGet(this, _Game_canvasHTML, "f").height * (1 / size) * (size + 2));
+            else
+                __classPrivateFieldGet(this, _Game_canvasHTML, "f").height = Math.trunc(__classPrivateFieldGet(this, _Game_canvasHTML, "f").width * 1.4);
             const tree = new Tree(new Set(init.dict));
             __classPrivateFieldSet(this, _Game_dict, tree, "f");
             __classPrivateFieldSet(this, _Game_touch, new Touches(__classPrivateFieldGet(this, _Game_canvas, "f"), __classPrivateFieldGet(this, _Game_dict, "f")), "f");
@@ -586,7 +799,7 @@ class Game {
             __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchend', __classPrivateFieldGet(this, _Game_touch, "f").handleEnd);
             __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchcancel', __classPrivateFieldGet(this, _Game_touch, "f").handleCancel);
             __classPrivateFieldGet(this, _Game_canvasHTML, "f").addEventListener('touchmove', __classPrivateFieldGet(this, _Game_touch, "f").handleMove);
-            __classPrivateFieldGet(this, _Game_touch, "f").drawTable(init.table, size);
+            __classPrivateFieldGet(this, _Game_touch, "f").drawGame(init.table, size);
         });
     }
     removeMenuHandlers() {
