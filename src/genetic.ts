@@ -2,10 +2,12 @@ import { Letters } from './alphabet';
 import type { TreeDict } from './tree';
 
 export type Matrix = string[][];
-export type FitnessFunction = (matrix: Matrix, tree: TreeDict) => number;
+export type FitnessFunction = (matrix: Matrix, tree: TreeDict) => { score: number; words: number; reason: number };
 
 export class Table {
     score: number | undefined;
+    words: number | undefined;
+    reason: number | undefined;
 
     #analFunc: FitnessFunction;
     #tree: TreeDict;
@@ -15,15 +17,20 @@ export class Table {
         this.#tree = tree;
     }
 
-    getScore(): number {
-        if (this.score === undefined) {
-            this.score = this.#analFunc(this.matrix, this.#tree);
+    getScore(): { score: number; words: number; reason: number } {
+        if (this.score === undefined || this.words === undefined || this.reason === undefined) {
+            const { score, words, reason } = this.#analFunc(this.matrix, this.#tree);
+            this.score = score;
+            this.words = words;
+            this.reason = reason;
         }
-        return this.score;
+        return { score: this.score, words: this.words, reason: this.reason };
     }
 
     resetScore() {
         this.score = undefined;
+        this.reason = undefined;
+        this.words = undefined;
     }
 }
 
@@ -48,7 +55,7 @@ export class MatrixPopulation {
         for (let i = 0; i < populationSize; i++) {
             this.population.push(new Table(this.generateRandomMatrix(), fitnessFunction, tree));
         }
-        this.population.sort((a, b) => b.getScore() - a.getScore());
+        this.population.sort((a, b) => b.getScore().reason - a.getScore().reason);
     }
 
     // генерация случайной матрицы
@@ -88,7 +95,7 @@ export class MatrixPopulation {
 
             // выбираем матрицу с большим значением функции приспособленности
             if (Math.random() < selectionProbability) {
-                parents.push(p1.getScore() > p2.getScore() ? p1 : p2);
+                parents.push(p1.getScore().reason > p2.getScore().reason ? p1 : p2);
             } else {
                 parents.push(p1, p2);
             }
@@ -172,7 +179,7 @@ export class MatrixPopulation {
         this.mutate(offspring, this.mutationProbability);
 
         // Оставляем лучшие особи из предыдущей популяции
-        const sortedPopulation = this.population.sort((a, b) => b.getScore() - a.getScore());
+        const sortedPopulation = this.population.sort((a, b) => b.getScore().reason - a.getScore().reason);
         const elite = sortedPopulation.slice(0, elitismCount);
 
         // Составляем новую популяцию из лучших особей предыдущей популяции и потомков

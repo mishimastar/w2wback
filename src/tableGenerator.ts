@@ -7,7 +7,7 @@ import { Graph } from './graph';
 
 const cfgs = new Map<number, { enough: number; epoch: number }>([
     [4, { enough: 140, epoch: 200000 }],
-    [5, { enough: 180, epoch: 100000 }],
+    [5, { enough: 170, epoch: 100000 }],
     [17, { enough: 100, epoch: 100000 }],
     [6, { enough: 250, epoch: 120000 }]
 ]);
@@ -70,6 +70,7 @@ export class TableGenerators {
         let maxWords = 0;
         let bestTable = '';
         let bestStep = 0;
+        let maxScoreK = 0;
 
         const results: number[] = [];
 
@@ -77,35 +78,60 @@ export class TableGenerators {
             Gen.applyGeneticOperators();
 
             const t = Gen.getBestMatrixFromPopulation();
-            const score = t.getScore();
+            const { score, words } = t.getScore();
             const m = t.matrix;
             let table = '';
             for (const r of m) for (const l of r) table += l;
-            if (score > maxWords) {
-                maxWords = score;
+            if (score / words > maxScoreK) maxScoreK = score / words;
+            if (words > maxWords) {
+                maxWords = words;
                 bestTable = table;
                 bestStep = i;
             }
 
-            results.push(score);
-            if (score > maxWords) {
-                maxWords = score;
+            results.push(words);
+            if (words > maxWords) {
+                maxWords = words;
                 bestTable = table;
                 bestStep = i;
             }
             if (maxWords >= enough || (i >= s06 && maxWords >= enough08)) {
-                console.log('ITERRUPT', table, 'words:', score, 'bestTable:', bestTable, 'maxWords:', maxWords, 'STEP:', i);
+                console.log(
+                    'ITERRUPT',
+                    table,
+                    'words:',
+                    words,
+                    'bestTable:',
+                    bestTable,
+                    'maxWords:',
+                    maxWords,
+                    'best score/word:',
+                    maxScoreK,
+                    'STEP:',
+                    i
+                );
                 return bestTable;
             }
         }
 
-        console.log('RESULT   maxWords:', maxWords, 'bestTable:', bestTable, 'STEPS:', steps, 'best step:', bestStep);
+        console.log(
+            'RESULT   maxWords:',
+            maxWords,
+            'bestTable:',
+            bestTable,
+            'STEPS:',
+            steps,
+            'best step:',
+            bestStep,
+            'best score/word:',
+            maxScoreK
+        );
         return bestTable;
     };
 
     geneticGraph = (size: number, population: number = 16) => {
         const cfg = cfgs.get(size)!;
-        const steps = 200;
+        const steps = 400;
         const s06 = Math.trunc((steps * 2) / 3);
         const enough = cfg.enough;
         const enough08 = Math.trunc(cfg.enough * 0.8);
@@ -115,6 +141,7 @@ export class TableGenerators {
         let maxWords = 0;
         let bestTable = '';
         let bestStep = 0;
+        let maxScoreK = 0;
 
         const results: number[] = [];
 
@@ -122,29 +149,55 @@ export class TableGenerators {
             Gen.applyGeneticOperators();
 
             const t = Gen.getBestMatrixFromPopulation();
-            const score = t.getScore();
+            const { score, words } = t.getScore();
             const m = t.matrix;
             let table = '';
             for (const r of m) for (const l of r) table += l;
-            if (score > maxWords) {
-                maxWords = score;
+
+            if (words > maxWords) {
+                maxWords = words;
                 bestTable = table;
                 bestStep = i;
+                maxScoreK = score / words;
             }
 
-            results.push(score);
-            if (score > maxWords) {
-                maxWords = score;
+            results.push(words);
+            if (words > maxWords) {
+                maxWords = words;
                 bestTable = table;
                 bestStep = i;
             }
             if (maxWords >= enough || (i >= s06 && maxWords >= enough08)) {
-                console.log('ITERRUPT', table, 'words:', score, 'bestTable:', bestTable, 'maxWords:', maxWords, 'STEP:', i);
+                console.log(
+                    'ITERRUPT',
+                    table,
+                    'words:',
+                    words,
+                    'bestTable:',
+                    bestTable,
+                    'maxWords:',
+                    maxWords,
+                    'best score/word:',
+                    maxScoreK,
+                    'STEP:',
+                    i
+                );
                 return bestTable;
             }
         }
 
-        console.log('RESULT   maxWords:', maxWords, 'bestTable:', bestTable, 'STEPS:', steps, 'best step:', bestStep);
+        console.log(
+            'RESULT   maxWords:',
+            maxWords,
+            'bestTable:',
+            bestTable,
+            'STEPS:',
+            steps,
+            'best step:',
+            bestStep,
+            'best score/word:',
+            maxScoreK
+        );
         return bestTable;
     };
 

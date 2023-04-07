@@ -43,14 +43,18 @@ export class Graph {
         }
     }
 
-    studyResult(): { words: Set<string>; score: number } {
+    studyResult(): { words: Set<string>; score: number; reason: number } {
         let score = 0;
+        let reason = 0;
         for (const resp of this.result) {
             const indexes = resp.split(',').map((d) => Number(d));
             this.unique.add(this.#buildWordString(indexes));
-            score += this.#calcWordScore(indexes.length);
         }
-        return { words: this.unique, score };
+        for (const word of this.unique) {
+            if (word.length >= 8) reason += this.#calcWordScore(word.length);
+            score += this.#calcWordScore(word.length);
+        }
+        return { words: this.unique, score, reason };
     }
 
     clearAll = () => this.m.map((node) => node.clearUsed());

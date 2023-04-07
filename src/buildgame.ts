@@ -27,5 +27,10 @@ export const BuildGame = (size: number): { table: string; dict: string[] } => {
     const graph = new Graph(table);
     const { words } = graph.dive(treeWithShort).studyResult();
     for (const resp of words) dict.push(resp);
+    dict.sort((a, b) => {
+        if (a.length > b.length) return 1;
+        if (a.length < b.length) return -1;
+        return 0;
+    });
     return { table, dict };
 };
