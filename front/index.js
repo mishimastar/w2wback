@@ -473,8 +473,8 @@ class Touches {
         let word = '';
         for (const cell of this.selectedNodes)
             word += cell.letter;
-        console.log('tree', word, this.dict.hasWord(word.toLowerCase()));
-        if (this.dict.hasWord(word.toLowerCase()) && !this.solved.has(word)) {
+        console.log('tree', word, this.dict.hasWord(word));
+        if (this.dict.hasWord(word) && !this.solved.has(word)) {
             let s = 0;
             for (let i = 1; i <= this.selectedNodes.length; i++)
                 s += i;
@@ -491,7 +491,6 @@ class Touches {
     }
     isNeighbour2Last(node) {
         const last = this.selectedNodes[this.selectedNodes.length - 1];
-        // console.log(last, i, j);
         if (!last)
             return true;
         return last.hasNeighbour(node.index);
@@ -806,6 +805,7 @@ class Game {
     start(size) {
         return __awaiter(this, void 0, void 0, function* () {
             const init = yield LoadTable(size);
+            console.log(init);
             if (size <= 6)
                 __classPrivateFieldGet(this, _Game_canvasHTML, "f").height = Math.trunc(__classPrivateFieldGet(this, _Game_canvasHTML, "f").height * (1 / size) * (size + 2));
             else

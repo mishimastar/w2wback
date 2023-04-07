@@ -6,7 +6,7 @@ import { Fitness, FitnessGraph } from './fitnessFunc';
 import { Graph } from './graph';
 
 const cfgs = new Map<number, { enough: number; epoch: number }>([
-    [4, { enough: 100, epoch: 200000 }],
+    [4, { enough: 140, epoch: 200000 }],
     [5, { enough: 180, epoch: 100000 }],
     [17, { enough: 100, epoch: 100000 }],
     [6, { enough: 250, epoch: 120000 }]
