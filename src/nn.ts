@@ -1,56 +1,19 @@
 import { writeFileSync } from 'fs';
-
-const alph = [
-    'а',
-    'б',
-    'в',
-    'г',
-    'д',
-    'е',
-    'ж',
-    'з',
-    'и',
-    'й',
-    'к',
-    'л',
-    'м',
-    'н',
-    'о',
-    'п',
-    'р',
-    'с',
-    'т',
-    'у',
-    'ф',
-    'х',
-    'ц',
-    'ч',
-    'ш',
-    'щ',
-    'ъ',
-    'ы',
-    'ь',
-    'э',
-    'ю',
-    'я'
-];
+import { Letters } from './alphabet';
 
 export class Let {
     weight: number;
 
     constructor(public letter: string) {
         this.weight = 50;
-        // this.weight = Math.random() * 100;
     }
 
     increase(mult: number) {
         this.weight += 1 * mult;
-        // this.weight += Math.random() * mult;
     }
 
     reduce(mult: number) {
         this.weight -= 1 * mult;
-        // this.weight -= Math.random() * mult;
     }
 }
 
@@ -72,15 +35,15 @@ export class Generator {
         this.lastOut = [];
         this.lastChanged = 0;
         this.tEpoch2Len = Math.trunc(totalEpoch / 25);
-        this.k = Math.pow(alph.length, 1 / totalEpoch);
-        this.m = Math.pow(alph.length, -(1 / totalEpoch));
+        this.k = Math.pow(Letters.length, 1 / totalEpoch);
+        this.m = Math.pow(Letters.length, -(1 / totalEpoch));
         this.epoch = 0;
         this.badResCounter = 0;
         this.goodResCounter = 0;
         for (let i = 0; i < strLen; i++) {
             this.lastOut.push(0);
             const buf: Let[] = [];
-            for (const letter of alph) buf.push(new Let(letter));
+            for (const letter of Letters) buf.push(new Let(letter));
 
             buf.sort((a, b) => {
                 if (a.weight > b.weight) return -1;
@@ -94,7 +57,7 @@ export class Generator {
 
     buildString() {
         let out = '';
-        const dia = Math.pow(this.m, this.epoch) * alph.length;
+        const dia = Math.pow(this.m, this.epoch) * Letters.length;
         // const dia = -Math.pow(this.k, this.epoch) + alph.length;
         // const dia = (alph.length * (this.tEpoch2Len - Math.trunc(this.epoch / this.strLen))) / this.tEpoch2Len;
         const index = Math.trunc(Math.random() * dia);

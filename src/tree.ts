@@ -40,7 +40,7 @@ export class LetterNode {
     }
 }
 
-export class Tree {
+export class TreeDict {
     #Tree = new Map<string, LetterNode>();
 
     constructor(dictionary: Set<string>) {

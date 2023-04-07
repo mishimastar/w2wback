@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { Matrix } from './matrix';
 import { Generator } from './nn2';
-import { Tree } from './tree';
+import { TreeDict } from './tree';
 
 const raw = readFileSync('./dictionary.txt', { encoding: 'utf-8' });
 const arr = raw.split(',');
@@ -19,7 +19,7 @@ for (const word of arr) {
 
 const size = 5;
 
-const tree = new Tree(filtered);
+const tree = new TreeDict(filtered);
 const steps = 100000;
 const logSteps = 10000;
 const Gen = new Generator(size ** 2, steps, 1, 1);

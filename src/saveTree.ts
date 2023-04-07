@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { Tree } from './tree';
+import { TreeDict } from './tree';
 
 const raw = readFileSync('./dictionary.txt', { encoding: 'utf-8' });
 const arr = raw.split(',');
@@ -8,6 +8,6 @@ for (const w of arr) filtered.add(w.toLowerCase());
 
 console.log(filtered);
 console.log(filtered.size);
-const tree = new Tree(filtered);
+const tree = new TreeDict(filtered);
 
 writeFileSync('./tree.json', JSON.stringify(tree.getAsObject()));

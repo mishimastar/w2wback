@@ -1,5 +1,5 @@
 import { rawDictionary } from './dict.js';
-import { Tree } from './tree.js';
+import { TreeDict } from './tree.js';
 
 // function readTextFile(file: string) {
 //     fetch(file)
@@ -14,7 +14,7 @@ for (const w of arr) filtered.add(w.toLowerCase());
 
 console.log(filtered);
 console.log(filtered.size);
-const tree = new Tree(filtered);
+const tree = new TreeDict(filtered);
 
 const drawRect = (x0: number, y0: number, w: number, h: number, color: string, c: CanvasRenderingContext2D) => {
     c.beginPath();
@@ -91,7 +91,7 @@ class Touches {
     #tableStr!: string;
     padding = 0;
 
-    constructor(public canvas2D: CanvasRenderingContext2D, public dict: Tree) {}
+    constructor(public canvas2D: CanvasRenderingContext2D, public dict: TreeDict) {}
 
     setWH(w: number, h: number) {
         this.width = w;
@@ -338,9 +338,9 @@ class Game {
     #canvasHTML: HTMLCanvasElement;
     #canvas: CanvasRenderingContext2D;
     #touch: Touches;
-    #dict: Tree;
+    #dict: TreeDict;
 
-    constructor(canvas: HTMLCanvasElement, dict: Tree) {
+    constructor(canvas: HTMLCanvasElement, dict: TreeDict) {
         this.#canvasHTML = canvas;
         this.#canvas = this.#canvasHTML.getContext('2d')!;
         this.#dict = dict;

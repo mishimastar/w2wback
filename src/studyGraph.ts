@@ -1,28 +1,25 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { Graph17 } from './linkedGraph';
+import { Graph } from './graph';
 import { Generator } from './nn2';
-import { Tree } from './tree';
+import { TreeDict } from './tree';
 
 const raw = readFileSync('./dictionary.txt', { encoding: 'utf-8' });
 const arr = raw.split(',');
 const filtered = new Set<string>();
-for (const w of arr) if (w.length > 3) filtered.add(w.toLowerCase());
-
-// const arr = JSON.parse(readFileSync('./ourCustomExtented2.json', { encoding: 'utf-8' }));
-
-// const filtered = new Set<string>();
+for (const w of arr) filtered.add(w.toLowerCase());
+// for (const w of arr) if (w.length > 3) filtered.add(w.toLowerCase());
 
 for (const word of arr) {
     if (!word || word.includes('-') || word.includes('.')) continue;
     filtered.add(word.trim());
 }
 
-const size = 17;
+const size = 31;
 
-const tree = new Tree(filtered);
+const tree = new TreeDict(filtered);
 const steps = 1000000;
 const logSteps = 10000;
-const Gen = new Generator(size, steps, 1, 1);
+const Gen = new Generator(size, steps, 1, 3);
 
 let maxWords = 0;
 let bestTable = '';
@@ -43,9 +40,9 @@ for (let i = 0; i <= steps; i++) {
     // if (i === 20) break;
     const table = Gen.buildString();
     // console.log(table);
-    const graph = new Graph17(table);
+    const graph = new Graph(table);
     graph.dive(tree);
-    const words = graph.studyHowMuch().size;
+    const words = graph.studyResult().words.size;
     results.push(words);
     if (words > maxWords) {
         maxWords = words;

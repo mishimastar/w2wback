@@ -1,4 +1,4 @@
-import type { LetterNode, Tree } from './tree';
+import type { LetterNode, TreeDict } from './tree';
 
 export class Letter {
     free: boolean;
@@ -139,7 +139,7 @@ export class Matrix {
         return;
     }
 
-    dive(tree: Tree) {
+    dive(tree: TreeDict) {
         for (let i = 0; i < this.dimension; i++) {
             for (let j = 0; j < this.dimension; j++) {
                 const first = this.m[i]![j]!;
@@ -150,9 +150,10 @@ export class Matrix {
                 this.clearAll();
             }
         }
+        return this;
     }
 
-    divePerf(tree: Tree) {
+    divePerf(tree: TreeDict) {
         for (let i = 0; i < this.dimension; i++) {
             for (let j = 0; j < this.dimension; j++) {
                 const first = this.m[i]![j]!;

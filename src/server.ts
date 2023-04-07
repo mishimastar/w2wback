@@ -10,7 +10,8 @@ const mime = {
     jpg: 'image/jpeg',
     png: 'image/png',
     svg: 'image/svg+xml',
-    js: 'application/javascript'
+    js: 'application/javascript',
+    json: 'application/json'
 };
 
 const processGet = async (
@@ -41,7 +42,7 @@ const processGet = async (
 
             const resp = JSON.stringify(BuildGame(Number(req.headers.size)));
             console.log('=====================================', resp);
-            return [resp, 200, 'application/json', undefined];
+            return [resp, 200, mime.js, undefined];
 
         default:
             return ['', 302, '', `http://${url.host}`];

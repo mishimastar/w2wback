@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import { Matrix } from './matrix';
-import { Tree } from './tree';
+import { TreeDict } from './tree';
 
 const raw = readFileSync('./dictionary.txt', { encoding: 'utf-8' });
 const arr = raw.split(',');
@@ -9,23 +9,25 @@ for (const w of arr) filtered.add(w.toLowerCase());
 
 console.log(filtered);
 console.log(filtered.size);
-const tree = new Tree(filtered);
-const folder = './tables/';
+const tree = new TreeDict(filtered);
+const folder = './tables5/';
 
-const out = readdirSync('./tables/');
+const out = readdirSync('./tables5/');
 const set = new Set<string>();
 const map = new Map<number, string[]>();
 const wordMap = new Map<string, number>();
 const wordLenMap = new Map<number, number>();
 
+const bufArr: string[] = [];
 for (const file of out) {
     const buf = JSON.parse(readFileSync(`${folder}${file}`, { encoding: 'utf-8' })) as string[];
     for (const str of buf) {
         set.add(str);
+        bufArr.push(str);
     }
 }
 
-console.log(set.size);
+console.log('unique:', set.size, 'total:', bufArr.length);
 
 for (const table of set) {
     const matrix = new Matrix(table, 5);
