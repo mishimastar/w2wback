@@ -51,7 +51,7 @@ export class Graph {
             this.unique.add(this.#buildWordString(indexes));
         }
         for (const word of this.unique) {
-            if (word.length >= 8) reason += this.#calcWordScore(word.length);
+            if (word.length >= 7) reason += this.#calcWordScore(word.length);
             score += this.#calcWordScore(word.length);
         }
         return { words: this.unique, score, reason };
