@@ -355,7 +355,7 @@ class Node {
         drawLetter(this.letter, this.lx, this.ly, this.canvas);
     }
 }
-class GraphNode {
+class GraphNodeRect {
     constructor(index, letter, lx, ly, canvas, radius, x0, y0, x1, y1) {
         this.index = index;
         this.letter = letter;
@@ -374,19 +374,55 @@ class GraphNode {
         this.radius2 = radius ? Math.trunc(Math.pow(radius, 2)) : Math.trunc(Math.pow(this.radius, 2));
     }
     draw() {
-        // drawRect(this.x0, this.y0, this.width, this.height, '#525f94', this.canvas);
+        drawRect(this.x0, this.y0, this.width, this.height, '#525f94', this.canvas);
+        drawLetter(this.letter, this.lx, this.ly, this.canvas);
+    }
+    select() {
+        this.selected = true;
+        drawRect(this.x0, this.y0, this.width, this.height, '#ff4721', this.canvas);
+        drawLetter(this.letter, this.lx, this.ly, this.canvas);
+    }
+    unselect() {
+        this.selected = false;
+        drawRect(this.x0, this.y0, this.width, this.height, '#525f94', this.canvas);
+        drawLetter(this.letter, this.lx, this.ly, this.canvas);
+    }
+    hasNeighbour(index) {
+        return this.neighbours.has(index);
+    }
+    addNeighbour(node) {
+        this.neighbours.set(node.index, node);
+    }
+}
+class GraphNodeHex {
+    constructor(index, letter, lx, ly, canvas, radius, x0, y0, x1, y1) {
+        this.index = index;
+        this.letter = letter;
+        this.lx = lx;
+        this.ly = ly;
+        this.canvas = canvas;
+        this.selected = false;
+        this.neighbours = new Map();
+        this.x0 = x0 !== null && x0 !== void 0 ? x0 : 0;
+        this.y0 = y0 !== null && y0 !== void 0 ? y0 : 0;
+        this.x1 = x1 !== null && x1 !== void 0 ? x1 : 0;
+        this.y1 = y1 !== null && y1 !== void 0 ? y1 : 0;
+        this.width = this.x1 - this.x0;
+        this.height = this.y1 - this.y0;
+        this.radius = radius !== null && radius !== void 0 ? radius : Math.trunc(this.width / 2);
+        this.radius2 = radius ? Math.trunc(Math.pow(radius, 2)) : Math.trunc(Math.pow(this.radius, 2));
+    }
+    draw() {
         drawHexagon(this.lx, this.ly, this.radius, '#525f94', this.canvas);
         drawLetter(this.letter, this.lx, this.ly, this.canvas);
     }
     select() {
         this.selected = true;
-        // drawRect(this.x0, this.y0, this.width, this.height, '#ff4721', this.canvas);
         drawHexagon(this.lx, this.ly, this.radius, '#ff4721', this.canvas);
         drawLetter(this.letter, this.lx, this.ly, this.canvas);
     }
     unselect() {
         this.selected = false;
-        // drawRect(this.x0, this.y0, this.width, this.height, '#525f94', this.canvas);
         drawHexagon(this.lx, this.ly, this.radius, '#525f94', this.canvas);
         drawLetter(this.letter, this.lx, this.ly, this.canvas);
     }
@@ -545,7 +581,7 @@ _Touches_tableStr = new WeakMap(), _Touches_copyTouch = new WeakMap(), _Touches_
         let x0 = 0;
         let x1 = this.stepW;
         for (let j = 0; j < this.steps; j++) {
-            this.nodes.push(new GraphNode(letCnt, __classPrivateFieldGet(this, _Touches_tableStr, "f")[letCnt].toUpperCase(), Math.trunc((x1 - x0) / 2) + x0, Math.trunc((y1 - y0) / 2) + y0, this.canvas2D, undefined, x0 + this.padW, y0 + this.padH, x1 - this.padW, y1 - this.padH));
+            this.nodes.push(new GraphNodeRect(letCnt, __classPrivateFieldGet(this, _Touches_tableStr, "f")[letCnt].toUpperCase(), Math.trunc((x1 - x0) / 2) + x0, Math.trunc((y1 - y0) / 2) + y0, this.canvas2D, undefined, x0 + this.padW, y0 + this.padH, x1 - this.padW, y1 - this.padH));
             x0 += this.stepW;
             x1 += this.stepW;
             letCnt++;
@@ -598,17 +634,17 @@ _Touches_tableStr = new WeakMap(), _Touches_copyTouch = new WeakMap(), _Touches_
     const order = [2, 0, 3, 1, 4, 7, 5, 8, 6, 9, 12, 10, 13, 11, 14, undefined, 15, undefined, 16, undefined];
     let cnt = 0;
     for (let x = outerRadius, j = 1; j < 6; x += outerRadius * (1 + Math.cos(ALPHA)), y += Math.pow((-1), j++) * outerRadius * Math.sin(ALPHA)) {
-        this.nodes.push(new GraphNode(order[cnt], table[order[cnt]].toUpperCase(), x, y, this.canvas2D, outerRadius * Math.sin(ALPHA)));
+        this.nodes.push(new GraphNodeHex(order[cnt], table[order[cnt]].toUpperCase(), x, y, this.canvas2D, outerRadius * Math.sin(ALPHA)));
         cnt++;
     }
     y += outerRadius * 3 * Math.sin(ALPHA);
     for (let x = outerRadius, j = 1; j < 6; x += outerRadius * (1 + Math.cos(ALPHA)), y += Math.pow((-1), j++) * outerRadius * Math.sin(ALPHA)) {
-        this.nodes.push(new GraphNode(order[cnt], table[order[cnt]].toUpperCase(), x, y, this.canvas2D, outerRadius * Math.sin(ALPHA)));
+        this.nodes.push(new GraphNodeHex(order[cnt], table[order[cnt]].toUpperCase(), x, y, this.canvas2D, outerRadius * Math.sin(ALPHA)));
         cnt++;
     }
     y += outerRadius * 3 * Math.sin(ALPHA);
     for (let x = outerRadius, j = 1; j < 6; x += outerRadius * (1 + Math.cos(ALPHA)), y += Math.pow((-1), j++) * outerRadius * Math.sin(ALPHA)) {
-        this.nodes.push(new GraphNode(order[cnt], table[order[cnt]].toUpperCase(), x, y, this.canvas2D, outerRadius * Math.sin(ALPHA)));
+        this.nodes.push(new GraphNodeHex(order[cnt], table[order[cnt]].toUpperCase(), x, y, this.canvas2D, outerRadius * Math.sin(ALPHA)));
         cnt++;
     }
     y += outerRadius * 3 * Math.sin(ALPHA);
@@ -617,7 +653,7 @@ _Touches_tableStr = new WeakMap(), _Touches_copyTouch = new WeakMap(), _Touches_
             cnt++;
             continue;
         }
-        this.nodes.push(new GraphNode(order[cnt], table[order[cnt]].toUpperCase(), x, y, this.canvas2D, outerRadius * Math.sin(ALPHA)));
+        this.nodes.push(new GraphNodeHex(order[cnt], table[order[cnt]].toUpperCase(), x, y, this.canvas2D, outerRadius * Math.sin(ALPHA)));
         cnt++;
     }
     this.canvas2D.font = `${Math.trunc(outerRadius * 0.8)}px Arial`;
