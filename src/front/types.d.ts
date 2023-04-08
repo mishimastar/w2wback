@@ -2,7 +2,7 @@ export type Dot = { x: number; y: number };
 export type Rectangle = { ul: Dot; dr: Dot };
 export type IntUnitConfig = { ul: Dot; width: number; height: number };
 export type InterfaceConfig = { stats: IntUnitConfig; preview: IntUnitConfig; playground: IntUnitConfig };
-
+export type SoundParams = { frequency: number; duration: number; volume: number };
 export interface EventBus extends EventEm {
     on(ev: 'updateScore', cb: (score: number) => void): this;
     on(ev: 'removeLetter', cb: () => void): this;

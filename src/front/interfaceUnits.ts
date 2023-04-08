@@ -1,7 +1,8 @@
 import type { TreeDict } from '../back/tree';
+import { GetNote } from '../constants/notes';
 import { GameHive, GameTable } from './fields';
 import type { PrimitiveDrawer } from './primitives';
-import type { Dot, EventBus, IntUnitConfig } from './types';
+import type { Dot, EventBus, IntUnitConfig, SoundParams } from './types';
 
 export class Preview {
     word = '';
@@ -11,6 +12,7 @@ export class Preview {
     #drawer: PrimitiveDrawer;
     #ul: Dot;
     #center: Dot;
+    #audio: AudioContext;
 
     constructor(drawer: PrimitiveDrawer, unitcfg: IntUnitConfig) {
         this.#ul = unitcfg.ul;
@@ -18,6 +20,21 @@ export class Preview {
         this.#height = unitcfg.height;
         this.#center = { x: Math.trunc(this.#ul.x + this.#width / 2), y: Math.trunc(this.#ul.y + this.#height / 2) };
         this.#drawer = drawer;
+        this.#audio = new AudioContext();
+    }
+
+    #createSound({ frequency, duration, volume }: SoundParams) {
+        const oscillator = this.#audio.createOscillator();
+        const gainNode = this.#audio.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.#audio.destination);
+
+        oscillator.frequency.value = frequency;
+        gainNode.gain.value = volume;
+
+        oscillator.start();
+        oscillator.stop(this.#audio.currentTime + duration);
     }
 
     #clear() {
@@ -27,6 +44,7 @@ export class Preview {
     #draw() {
         this.#clear();
         this.#drawer.letter(this.word, this.#center);
+        if (this.word.length > 0) this.#createSound({ frequency: GetNote(this.word.length), duration: 0.1, volume: 100 });
     }
 
     addLetter = (letter: string) => {
@@ -64,6 +82,7 @@ export class Stats {
     #ul: Dot;
     #center: Dot;
     #drawer: PrimitiveDrawer;
+    #audio: AudioContext;
 
     constructor(drawer: PrimitiveDrawer, unitcfg: IntUnitConfig) {
         this.#ul = unitcfg.ul;
@@ -71,6 +90,21 @@ export class Stats {
         this.#height = unitcfg.height;
         this.#center = { x: Math.trunc(this.#ul.x + this.#width / 2), y: Math.trunc(this.#ul.y + this.#height / 2) };
         this.#drawer = drawer;
+        this.#audio = new AudioContext();
+    }
+
+    #createSound({ frequency, duration, volume }: SoundParams) {
+        const oscillator = this.#audio.createOscillator();
+        const gainNode = this.#audio.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.#audio.destination);
+
+        oscillator.frequency.value = frequency;
+        gainNode.gain.value = volume;
+
+        oscillator.start();
+        oscillator.stop(this.#audio.currentTime + duration);
     }
 
     #clear() {
@@ -86,6 +120,10 @@ export class Stats {
     updateScore = (incr: number) => {
         this.#score += incr;
         this.#solvedWords++;
+        this.#createSound({ frequency: GetNote(1), duration: 0.2, volume: 100 });
+        // this.#createSound({ frequency: GetNote(3), duration: 0.2, volume: 100 });
+        // this.#createSound({ frequency: GetNote(5), duration: 0.2, volume: 100 });
+        this.#createSound({ frequency: GetNote(8), duration: 0.2, volume: 100 });
         this.#draw();
     };
 
