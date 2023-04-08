@@ -8,9 +8,11 @@ export interface EventBus extends EventEm {
     on(ev: 'removeLetter', cb: () => void): this;
     on(ev: 'addLetter', cb: (letter: string) => void): this;
     on(ev: 'eraseWord', cb: () => void): this;
+    on(ev: 'startGame', cb: (size: number) => void): this;
 
     emit(ev: 'updateScore', score: number): void;
     emit(ev: 'removeLetter'): void;
     emit(ev: 'addLetter', letter: string): void;
     emit(ev: 'eraseWord'): void;
+    emit(ev: 'startGame', size: number): void;
 }
