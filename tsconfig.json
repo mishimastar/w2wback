@@ -35,6 +35,6 @@
 
         "pretty": true
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "src/constants/graphCfg.ts", "src/constants/alphabet.ts"],
     "exclude": ["built/**/*"]
 }
