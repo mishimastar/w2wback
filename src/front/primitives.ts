@@ -1,4 +1,4 @@
-import { HEXALPHA } from './angles';
+import { HEXALPHA } from '../constants/angles';
 import type { Dot } from './types';
 
 export class PrimitiveDrawer {

@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { Matrix } from './matrix';
-import { Generator } from './nn';
-import { TreeDict } from './tree';
+import { Matrix } from '../matrix';
+import { Generator } from '../nn2';
+import { TreeDict } from '../tree';
 
 const raw = readFileSync('./dictionary.txt', { encoding: 'utf-8' });
 const arr = raw.split(',');
@@ -20,9 +20,9 @@ for (const word of arr) {
 const size = 5;
 
 const tree = new TreeDict(filtered);
-const steps = 500000;
+const steps = 100000;
 const logSteps = 10000;
-const Gen = new Generator(size ** 2, steps, 1);
+const Gen = new Generator(size ** 2, steps, 1, 1);
 
 let maxWords = 0;
 let bestTable = '';
@@ -39,8 +39,10 @@ const countAvg = (last: number, iteration: number, res: number[]) => {
 };
 
 let previousWords = 0;
-for (let i = 0; i < steps; i++) {
+for (let i = 0; i <= steps; i++) {
+    // if (i === 20) break;
     const table = Gen.buildString();
+    // console.log(table);
     const matrix = new Matrix(table, size);
     matrix.dive(tree);
     const words = matrix.studyHowMuchWords();
@@ -50,8 +52,8 @@ for (let i = 0; i < steps; i++) {
         bestTable = table;
         bestStep = i;
     }
-    if (words > previousWords) Gen.result(true);
-    if (words < previousWords) Gen.result(false);
+    if (words > previousWords) Gen.result(1);
+    if (words < previousWords) Gen.result(-1);
     previousWords = words;
     if (i % logSteps === 0) {
         const avg = countAvg(logSteps, i, results);

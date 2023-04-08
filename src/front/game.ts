@@ -54,7 +54,7 @@ export class Game {
             this.#canvasHTML.height = window.innerHeight;
             this.#int.onResize();
         });
-        this.#int.registerTouchHandlers(this.#canvasHTML);
+        this.#int.registerHandlers(this.#canvasHTML);
         this.#int.Start();
     };
 
@@ -62,12 +62,18 @@ export class Game {
         this.#canvasHTML.removeEventListener('touchstart', this.#menu.handleStart);
         this.#canvasHTML.removeEventListener('touchend', this.#menu.handleEnd);
         this.#canvasHTML.removeEventListener('touchcancel', this.#menu.handleCancel);
+        this.#canvasHTML.removeEventListener('mousedown', this.#menu.handleMouseStart);
+        this.#canvasHTML.removeEventListener('mouseup', this.#menu.handleMouseEnd);
+        this.#canvasHTML.removeEventListener('mouseleave', this.#menu.handleMouseCancel);
     }
 
     drawMenu() {
         this.#canvasHTML.addEventListener('touchstart', this.#menu.handleStart);
         this.#canvasHTML.addEventListener('touchend', this.#menu.handleEnd);
         this.#canvasHTML.addEventListener('touchcancel', this.#menu.handleCancel);
+        this.#canvasHTML.addEventListener('mousedown', this.#menu.handleMouseStart);
+        this.#canvasHTML.addEventListener('mouseup', this.#menu.handleMouseEnd);
+        this.#canvasHTML.addEventListener('mouseleave', this.#menu.handleMouseCancel);
         this.#menu.drawMenu();
     }
 }

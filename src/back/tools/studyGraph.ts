@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { Graph } from './graph';
-import { Generator } from './nn2';
-import { TreeDict } from './tree';
+import { Graph } from '../graph';
+import { Generator } from '../nn2';
+import { TreeDict } from '../tree';
 
 const raw = readFileSync('./dictionary.txt', { encoding: 'utf-8' });
 const arr = raw.split(',');

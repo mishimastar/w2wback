@@ -1,12 +1,13 @@
 import type { TreeDict } from '../back/tree';
 import { GraphConfigs } from '../constants/graphCfg';
-import { HEXALPHA } from './angles';
+import { HEXALPHA } from '../constants/angles';
 import { InteractiveHex, InteractiveRect, InteractiveUnit } from './interactiveUnits';
 import type { PrimitiveDrawer } from './primitives';
 import type { Dot, EventBus, IntUnitConfig } from './types';
 
 class GameAbstract {
     #ongoingTouches: { identifier: number; pageX: number; pageY: number }[] = [];
+    #mouseDown: boolean;
     #eventBus: EventBus;
     protected width: number;
     protected height: number;
@@ -29,6 +30,8 @@ class GameAbstract {
         this.width = unitcfg.width;
         this.height = unitcfg.height;
         this.ul = unitcfg.ul;
+
+        this.#mouseDown = false;
     }
 
     configure(unitcfg: IntUnitConfig) {
@@ -48,6 +51,28 @@ class GameAbstract {
             if (id === idToFind) return i;
         }
         return -1;
+    };
+
+    handleMouseMove = (event: MouseEvent) => {
+        if (!this.#mouseDown) return;
+        this.#selectCell(event);
+    };
+
+    handleMouseStart = (event: MouseEvent) => {
+        this.#mouseDown = true;
+        this.#selectCell(event);
+    };
+
+    handleMouseEnd = (_event: MouseEvent) => {
+        this.#mouseDown = false;
+        this.#countScore();
+        this.#resetCells();
+    };
+
+    handleMouseCancel = (_event: MouseEvent) => {
+        this.#mouseDown = false;
+        this.#countScore();
+        this.#resetCells();
     };
 
     handleStart = (evt: TouchEvent) => {
@@ -102,7 +127,7 @@ class GameAbstract {
         }
     }
 
-    #touchMeetsCell = (t: Touch, r: InteractiveUnit) => r.touchInside(t);
+    #touchMeetsCell = (t: Touch | MouseEvent, r: InteractiveUnit) => r.touchInside(t);
 
     #isNeighbour2Last(node: InteractiveUnit) {
         const last = this.#selectedNodes[this.#selectedNodes.length - 1];
@@ -110,7 +135,7 @@ class GameAbstract {
         return last.hasNeighbour(node.index);
     }
 
-    #selectCell(t: Touch) {
+    #selectCell(t: Touch | MouseEvent) {
         for (const node of this.nodes) {
             if (this.#touchMeetsCell(t, node)) {
                 if (!this.#isNeighbour2Last(node)) return;

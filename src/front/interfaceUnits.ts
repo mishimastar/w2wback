@@ -131,4 +131,11 @@ export class GameField {
         htmlc.addEventListener('touchcancel', this.game.handleCancel);
         htmlc.addEventListener('touchmove', this.game.handleMove);
     }
+
+    registerMouseHandlers(htmlc: HTMLCanvasElement) {
+        htmlc.addEventListener('mousedown', this.game.handleMouseStart);
+        htmlc.addEventListener('mouseup', this.game.handleMouseEnd);
+        htmlc.addEventListener('mouseleave', this.game.handleMouseCancel);
+        htmlc.addEventListener('mousemove', this.game.handleMouseMove);
+    }
 }

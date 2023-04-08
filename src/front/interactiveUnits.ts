@@ -1,4 +1,4 @@
-import { HEXALPHA } from './angles';
+import { HEXALPHA } from '../constants/angles';
 import type { PrimitiveDrawer } from './primitives';
 import type { Dot, Rectangle } from './types';
 
@@ -9,34 +9,10 @@ export interface InteractiveUnit {
     draw(): void;
     select(): void;
     unselect(): void;
-    touchInside(touch: Touch): boolean;
+    touchInside(touch: Touch | MouseEvent): boolean;
     hasNeighbour(index: number): boolean;
     addNeighbour(node: InteractiveUnit): void;
 }
-
-// abstract class AbstractParent implements InteractiveUnit {
-
-//     selected = false;
-//     Unit;
-
-//     constructor(
-//         public index: number,
-//         public letter: string,
-//         public lx: number,
-//         public ly: number,
-//         public drawer: PrimitiveDrawer
-//     ) {}
-
-//     abstract draw(): void;
-
-//     select() {
-//         this.selected = true;
-//     }
-
-//     unselect() {
-//         this.selected = false;
-//     }
-// }
 
 export class InteractiveButton implements InteractiveUnit {
     #width: number;
@@ -83,9 +59,7 @@ export class InteractiveButton implements InteractiveUnit {
         else return false;
     }
 
-    touchInside(touch: Touch): boolean {
-        return this.#dotInside({ x: touch.pageX, y: touch.pageY });
-    }
+    touchInside = (touch: Touch | MouseEvent): boolean => this.#dotInside({ x: touch.pageX, y: touch.pageY });
 }
 
 export class InteractiveRect implements InteractiveUnit {
@@ -135,9 +109,7 @@ export class InteractiveRect implements InteractiveUnit {
     #dotInside = (dot: Dot): boolean =>
         (this.#letterDot.x - dot.x) ** 2 + (this.#letterDot.y - dot.y) ** 2 <= this.#radius2;
 
-    touchInside(touch: Touch): boolean {
-        return this.#dotInside({ x: touch.pageX, y: touch.pageY });
-    }
+    touchInside = (touch: Touch): boolean => this.#dotInside({ x: touch.pageX, y: touch.pageY });
 }
 
 export class InteractiveHex implements InteractiveUnit {
@@ -183,7 +155,5 @@ export class InteractiveHex implements InteractiveUnit {
     #dotInside = (dot: Dot): boolean =>
         (this.#letterDot.x - dot.x) ** 2 + (this.#letterDot.y - dot.y) ** 2 <= this.#radius2;
 
-    touchInside(touch: Touch): boolean {
-        return this.#dotInside({ x: touch.pageX, y: touch.pageY });
-    }
+    touchInside = (touch: Touch): boolean => this.#dotInside({ x: touch.pageX, y: touch.pageY });
 }

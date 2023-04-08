@@ -28,6 +28,18 @@ export class Menu {
         return -1;
     };
 
+    handleMouseStart = (event: MouseEvent) => {
+        this.selectButton(event);
+    };
+
+    handleMouseEnd = async (event: MouseEvent) => {
+        await this.checkConfirmation(event);
+    };
+
+    handleMouseCancel = async (event: MouseEvent) => {
+        await this.checkConfirmation(event);
+    };
+
     handleStart = (evt: TouchEvent) => {
         evt.preventDefault();
         const touches = evt.changedTouches;
@@ -61,7 +73,7 @@ export class Menu {
         for (const n of this.rectangles) n.unselect();
     }
 
-    async checkConfirmation(t: Touch) {
+    async checkConfirmation(t: Touch | MouseEvent) {
         for (const b of this.rectangles) {
             if (!this.touchMeetsButton(t, b)) continue;
             if (b.selected) {
@@ -96,9 +108,9 @@ export class Menu {
         this.resetButtons();
     }
 
-    touchMeetsButton = (t: Touch, r: InteractiveButton) => r.touchInside(t);
+    touchMeetsButton = (t: Touch | MouseEvent, r: InteractiveButton) => r.touchInside(t);
 
-    selectButton(t: Touch) {
+    selectButton(t: Touch | MouseEvent) {
         for (const b of this.rectangles) {
             if (!this.touchMeetsButton(t, b)) continue;
             if (b.selected) return;

@@ -43,8 +43,9 @@ export class Interface {
         this.#eb.on('eraseWord', this.preview.erase);
     }
 
-    registerTouchHandlers(htmlc: HTMLCanvasElement) {
+    registerHandlers(htmlc: HTMLCanvasElement) {
         this.playground.registerTouchHandlers(htmlc);
+        this.playground.registerMouseHandlers(htmlc);
     }
 
     Start() {
